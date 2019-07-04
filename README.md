@@ -31,3 +31,8 @@ composer install
 References:
 * https://github.com/NastuzziSamy/files_external_gdrive
 * https://github.com/icewind1991/files_external_dropbox
+
+## Issues known
+* missing logic to refresh token
+* investigate on slow performances
+* upload large file
