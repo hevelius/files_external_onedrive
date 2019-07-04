@@ -1,0 +1,7 @@
+vendor/
+composer.lock
+coverage.xml
+.vscode
+
+# Mac OS X artifacts
+.DS_Store
