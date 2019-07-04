@@ -6,7 +6,7 @@ Requires ownCloud 10.0 or later
 ## Steps For Installation:
 - Get the code
 ```bash
-git clone https://github.com/Alx2000y/files_external_onedrive
+git clone https://github.com/hevelius/files_external_onedrive
 cd files_external_onedrive
 composer install
 ```
@@ -25,4 +25,3 @@ composer install
 - Click Grant Access and then you will be redirected for OAuth login
 - After completing the OAuth you will be redirect back to Storage Section and you should see **green** mark along your storage configuration
 - That's it
-
