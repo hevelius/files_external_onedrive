@@ -1,0 +1,54 @@
+{
+    "name":              "hevelius/files_external_onedrive",
+    "description":       "OneDrive for OwnCloud.",
+    "homepage":          "https://github.com/hevelius/files_external_onedrive",
+    "license":           "GPL-3.0",
+    "prefer-stable":     true,
+    "minimum-stability": "dev",
+
+    "keywords": [
+        "hevelius",
+        "onedrive",
+        "php",
+        "OwnCloud"
+    ],
+
+    "author": [
+        {
+            "name":     "hevelius",
+            "homepage": "https://github.com/hevelius/files_external_onedrive"
+        }
+    ],
+
+    "support": {
+        "email":  "mario.perrotta@unimi.it",
+        "issues": "https://github.com/hevelius/files_external_onedrive/issues",
+        "wiki":   "https://github.com/hevelius/files_external_onedrive/wiki",
+        "source": "https://github.com/hevelius/files_external_onedrive"
+    },
+    
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/hevelius/flysystem-onedrive.git"
+        }
+    ],
+
+    "require": {
+	"nicolasbeauvais/flysystem-onedrive": "dev-master",
+        "league/oauth2-client": "*",
+        "php":      ">= 5.4 || >= 7.0",
+        "ext-curl": "*"
+    },
+
+    "require-dev": {
+      "phpunit/phpunit": "^6.0"
+    },
+
+    "autoload": {
+    },
+
+    "scripts": {
+      "test": "vendor/bin/phpunit"
+    }
+}

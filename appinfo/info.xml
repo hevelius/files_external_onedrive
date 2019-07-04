@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+    <id>files_external_onedrive</id>
+    <name>External Storage: OneDrive</name>
+    <summary>Integrate OneDrive as an external storage</summary>
+    <description>Description</description>
+    <version>1.0.0</version>
+    <licence>agpl</licence>
+    <author>Mario Perrotta</author>
+    <namespace>Files_external_onedrive</namespace>
+    <category>tools</category>
+    <types>
+		<filesystem/>
+	</types>
+    <website>https://github.com/hevelius/files_external_onedrive</website>
+    <bugs>https://github.com/hevelius/files_external_onedrive/issues</bugs>
+    <repository type="git">https://github.com/hevelius/files_external_onedrive.git</repository>
+    <dependencies>
+        <nextcloud min-version="15" max-version="16"/>
+    </dependencies>
+</info>
