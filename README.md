@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/hevelius/files_external_onedrive.svg?branch=master)](https://travis-ci.org/hevelius/files_external_onedrive)
+
 # files_external_onedrive
 OneDrive backend for NextCloud
 
