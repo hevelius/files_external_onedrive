@@ -1,3 +1,7 @@
 language: php
 php:
   - '7.0'
+env:
+  - CODECOV_TOKEN=36c1e1d2-b376-4b1f-b713-29d9e8a5d1d7
+after_success:
+  - codecov
