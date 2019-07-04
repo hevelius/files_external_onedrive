@@ -21,14 +21,6 @@
  *
  */
 
-/*$app = new \OCA\Files_external_onedrive\AppInfo\Application();
-
-$app->registerRoutes($this, [
-	'routes' => [
-		['name' => 'oauth#receiveToken', 'url' => '/oauth', 'verb' => 'POST'],
-	],
-]);*/
-
 if (\OC::$server->getAppManager()->isEnabledForUser('files_external')) {
     $application = new \OCA\Files_external_onedrive\AppInfo\Application();
     $application->registerRoutes($this, [
