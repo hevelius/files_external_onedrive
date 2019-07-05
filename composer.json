@@ -2,7 +2,7 @@
     "name":              "hevelius/files_external_onedrive",
     "description":       "OneDrive for OwnCloud.",
     "homepage":          "https://github.com/hevelius/files_external_onedrive",
-    "license":           "GPL-3.0",
+    "license":           "GPL-3.0-or-later",
     "prefer-stable":     true,
     "minimum-stability": "dev",
 
@@ -35,7 +35,7 @@
     ],
 
     "require": {
-	"nicolasbeauvais/flysystem-onedrive": "dev-master",
+	    "nicolasbeauvais/flysystem-onedrive": "dev-master",
         "league/oauth2-client": "*",
         "php":      ">= 5.4 || >= 7.0",
         "ext-curl": "*"
