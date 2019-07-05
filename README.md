@@ -12,7 +12,7 @@ git clone https://github.com/hevelius/files_external_onedrive
 cd files_external_onedrive
 composer install
 ```
-- Move this folder ```files_external_onedrive``` to ```owncloud/apps```
+- Move this folder ```files_external_onedrive``` to ```nextcloud/apps```
 - Activate the app from settings page
 - Fill up the storage details (See Below _Configuring OAuth2_)
 - Fire up the files page to see the ```OneDrive``` mounted as external storage
