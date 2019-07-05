@@ -1,7 +1,7 @@
 # files_external_onedrive
 OneDrive backend for NextCloud
 
-Requires NextCloud 15.0 or later
+Requires NextCloud 15.0 or later (Not tested on previous versions )
 
 ## Steps For Installation:
 - Get the code
