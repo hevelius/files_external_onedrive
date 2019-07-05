@@ -13,7 +13,7 @@
         "OwnCloud"
     ],
 
-    "author": [
+    "authors": [
         {
             "name":     "hevelius",
             "homepage": "https://github.com/hevelius/files_external_onedrive"
