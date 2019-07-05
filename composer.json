@@ -37,7 +37,7 @@
 
     "require": {
         "league/flysystem-cached-adapter": "*",
-	    "nicolasbeauvais/flysystem-onedrive": "dev-master",
+	    "nicolasbeauvais/flysystem-onedrive": "dev-develop",
         "league/oauth2-client": "*",
         "php":      ">= 5.4 || >= 7.0",
         "ext-curl": "*"
