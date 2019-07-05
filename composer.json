@@ -10,7 +10,8 @@
         "hevelius",
         "onedrive",
         "php",
-        "OwnCloud"
+        "OwnCloud",
+        "NextCloud"
     ],
 
     "authors": [
