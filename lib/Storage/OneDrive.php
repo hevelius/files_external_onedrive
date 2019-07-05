@@ -28,7 +28,9 @@ use Icewind\Streams\RetryWrapper;
 use OCP\Files\Storage\FlysystemStorageAdapter;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use Microsoft\Graph\Graph;
-	
+use League\Flysystem\Cached\CachedAdapter;
+use League\Flysystem\Cached\Storage\Memory as MemoryStore;
+
 class OneDrive extends \OC\Files\Storage\Flysystem {
 
     const APP_NAME = 'files_external_onedrive';
@@ -90,7 +92,11 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		
 			$this->root = isset($params['root']) ? $params['root'] : '/';
 			$this->id = 'onedrive::' . $this->clientId; //. '/' . $this->root;
-			$this->adapter = new Adapter($this->client, 'root', '/me/drive/', true);
+			$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
+
+			$cacheStore = new MemoryStore();
+			$this->adapter = new CachedAdapter($adapter, $cacheStore);
+
 			$this->buildFlySystem($this->adapter);
 			$this->logger = \OC::$server->getLogger();
 
