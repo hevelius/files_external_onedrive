@@ -215,10 +215,19 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 
+		curl_setopt($curl, CURLOPT_FAILONERROR, true);
+		
 		// EXECUTE:
 		$result = curl_exec($curl);
-		if(!$result){die("Connection Failure");}
+		//if(!$result){die("Connection Failure");}
+		if (curl_errno($curl)) {
+			$error_msg = curl_error($curl);
+		}
 		curl_close($curl);
+		
+		/*$result = curl_exec($curl);
+		if(!$result){die("Connection Failure");}
+		curl_close($curl);*/
 
         return $newToken;
     }
