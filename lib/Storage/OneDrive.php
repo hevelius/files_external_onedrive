@@ -198,9 +198,16 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
 		curl_setopt($curl, CURLOPT_PROXY, $proxy);
-		
+
 		// OPTIONS:
-		$url = "/index.php/apps/files_external/userstorages/".$backendID;
+		$baseURL = sprintf(
+			"%s://%s%s",
+			isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
+			$_SERVER['SERVER_NAME'],
+			$_SERVER['REQUEST_URI']
+		  );
+		  
+		$url = $baseURL."/index.php/apps/files_external/userstorages/".$backendID;
 		curl_setopt($curl, CURLOPT_URL, $url);
 		/*curl_setopt($curl, CURLOPT_HTTPHEADER, array(
 			'Content-Type: application/json',
