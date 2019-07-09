@@ -89,11 +89,11 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 			if($this->token !== null){
 				$now = time() + 300;
 				if($this->token->expires <= $now){
-					$this->token=$this->refreshToken();
+					$this->accessToken = $this->token=$this->refreshToken();
+				} else {
+					$this->accessToken = $this->token->access_token;
 				}
 			}
-
-			$this->accessToken = $this->token->access_token;
 
 			$this->client = new Graph();
 			$this->client->setAccessToken($this->accessToken);
@@ -216,7 +216,7 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 
 		curl_setopt($curl, CURLOPT_FAILONERROR, true);
-		
+
 		// EXECUTE:
 		$result = curl_exec($curl);
 		//if(!$result){die("Connection Failure");}
