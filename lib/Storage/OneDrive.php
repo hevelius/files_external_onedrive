@@ -169,7 +169,8 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		]);       
 
 		$backendID = 94;
-		
+		$proxy = "http://proxy.unimi.it:8080";
+
 		$data = array(
 			'mountPoint' => 'OneDrive',
 			'backend' => 'files_external_onedrive',
@@ -196,7 +197,8 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
-
+		curl_setopt($curl, CURLOPT_PROXY, $proxy);
+		
 		// OPTIONS:
 		$url = "/index.php/apps/files_external/userstorages/".$backendID;
 		curl_setopt($curl, CURLOPT_URL, $url);
