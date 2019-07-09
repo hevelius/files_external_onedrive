@@ -174,7 +174,7 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		$backendID = 94;
 		
 		$sql = 'SELECT * FROM `oc_external_config` WHERE `mount_id` = ?';
-		$query = \OCP\DB::prepare($sql);
+		$query = \OCP\IDBConnection::prepare($sql);
 		$params = $backendID;
 		$result = $query->execute($params);
 
