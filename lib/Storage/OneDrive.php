@@ -97,7 +97,7 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 
 			$storageConfig = new StorageConfig();
 			$result = $storageConfig->find(94);
-			
+
 			$this->client = new Graph();
 			$this->client->setAccessToken($this->accessToken);
 		
@@ -172,65 +172,11 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		]);       
 
 		$backendID = 94;
-		$proxy = "http://proxy.unimi.it:8080";
-
-		$data = array(
-			'mountPoint' => 'OneDrive',
-			'backend' => 'files_external_onedrive',
-			'authMechanism' => 'oauth2::oauth2',
-			'backendOptions' => array(
-				'configured' => true,
-				'client_id' => $this->clientId ,
-				'client_secret' => $this->clientSecret,
-				'token' => $newToken,
-				'testOnly' => true,
-				'id' => $backendID),
-			'mountOptions' => array(
-				'encrypt' => true,
-				'previews' => true,
-				'enable_sharing' => false,
-				'filesystem_check_changes' => 1,
-				'encoding_compatibility' => false,
-				'readonly' => false)
-		);
-
-		$post_data = json_encode($data, JSON_FORCE_OBJECT);
-
-		// updating storage with new Token
-		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-		curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
-		curl_setopt($curl, CURLOPT_PROXY, $proxy);
-
-		// OPTIONS:
-		$baseURL = sprintf(
-			"%s://%s%s",
-			isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ? 'https' : 'http',
-			$_SERVER['SERVER_NAME'],
-			$_SERVER['REQUEST_URI']
-		  );
-
-		$url = $baseURL."/apps/files_external/userstorages/".$backendID;
-		curl_setopt($curl, CURLOPT_URL, $url);
-		/*curl_setopt($curl, CURLOPT_HTTPHEADER, array(
-			'Content-Type: application/json',
-		));*/
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-
-		curl_setopt($curl, CURLOPT_FAILONERROR, true);
-
-		// EXECUTE:
-		$result = curl_exec($curl);
-		//if(!$result){die("Connection Failure");}
-		if (curl_errno($curl)) {
-			$error_msg = curl_error($curl);
-		}
-		curl_close($curl);
 		
-		/*$result = curl_exec($curl);
-		if(!$result){die("Connection Failure");}
-		curl_close($curl);*/
+		$sql = 'SELECT * FROM `oc_external_config` WHERE `mount_id` = ?';
+		$query = \OCP\DB::prepare($sql);
+		$params = $backendID;
+		$result = $query->execute($params);
 
         return json_encode($newToken);
     }
