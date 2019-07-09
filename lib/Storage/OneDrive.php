@@ -177,8 +177,8 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 			'authMechanism' => 'oauth2::oauth2',
 			'backendOptions' => array(
 				'configured' => true,
-				'client_id' => $clientId,
-				'client_secret' => $clientSecret,
+				'client_id' => $this->clientId ,
+				'client_secret' => $this->clientSecret,
 				'token' => $newToken,
 				'testOnly' => true,
 				'id' => $backendID),
