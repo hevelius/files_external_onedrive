@@ -229,7 +229,7 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		if(!$result){die("Connection Failure");}
 		curl_close($curl);*/
 
-        return $newToken;
+        return json_encode($newToken);
     }
 
 }
