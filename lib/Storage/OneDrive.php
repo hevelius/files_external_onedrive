@@ -30,7 +30,7 @@ use GuzzleHttp\Client as GuzzleHttpClient;
 use Microsoft\Graph\Graph;
 use League\Flysystem\Cached\CachedAdapter;
 use League\Flysystem\Cached\Storage\Memory as MemoryStore;
-use OCA\Files_External\Lib\StorageConfig;
+use OCA\Files_external_onedrive\Db\StorageConfig;
 
 class OneDrive extends \OC\Files\Storage\Flysystem {
 
@@ -95,6 +95,9 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 
 			$this->accessToken = $this->token->access_token;
 
+			$storageConfig = new StorageConfig();
+			$result = $storageConfig->find(94);
+			
 			$this->client = new Graph();
 			$this->client->setAccessToken($this->accessToken);
 		
