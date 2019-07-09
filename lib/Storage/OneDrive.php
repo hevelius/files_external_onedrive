@@ -30,6 +30,7 @@ use GuzzleHttp\Client as GuzzleHttpClient;
 use Microsoft\Graph\Graph;
 use League\Flysystem\Cached\CachedAdapter;
 use League\Flysystem\Cached\Storage\Memory as MemoryStore;
+use OCA\Files_External\Lib\StorageConfig;
 
 class OneDrive extends \OC\Files\Storage\Flysystem {
 
@@ -84,6 +85,13 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
             $this->clientSecret = $params['client_secret'];
 			
 			$this->token = json_decode($params['token']);
+
+			if($this->token !== null){
+				$now = time() + 300;
+				if($this->token->expires <= $now){
+					$this->token=$this->refreshToken();
+				}
+			}
 
 			$this->accessToken = $this->token->access_token;
 
@@ -143,5 +151,67 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		\arsort($arr);
 		return \array_values($arr)[0];
 	}
+
+	public function refreshToken(){
+
+		$provider = new \League\OAuth2\Client\Provider\GenericProvider([
+			'clientId'          => $this->clientId,
+			'clientSecret'      => $this->clientSecret,
+			'redirectUri'       => '',
+			'urlAuthorize'            => "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+			'urlAccessToken'          => "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+			'urlResourceOwnerDetails' => '',
+			'scopes'					  => 'Files.Read Files.Read.All Files.ReadWrite Files.ReadWrite.All User.Read offline_access'
+		]);
+
+        $newToken = $provider->getAccessToken('refresh_token', [
+            'refresh_token' => $this->token->refresh_token
+		]);       
+
+		$backendID = 94;
+		
+		$data = array(
+			'mountPoint' => 'OneDrive',
+			'backend' => 'files_external_onedrive',
+			'authMechanism' => 'oauth2::oauth2',
+			'backendOptions' => array(
+				'configured' => true,
+				'client_id' => $clientId,
+				'client_secret' => $clientSecret,
+				'token' => $newToken,
+				'testOnly' => true,
+				'id' => $backendID),
+			'mountOptions' => array(
+				'encrypt' => true,
+				'previews' => true,
+				'enable_sharing' => false,
+				'filesystem_check_changes' => 1,
+				'encoding_compatibility' => false,
+				'readonly' => false)
+		);
+
+		$post_data = json_encode($data, JSON_FORCE_OBJECT);
+
+		// updating storage with new Token
+		$curl = curl_init();
+		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
+
+		// OPTIONS:
+		$url = "/index.php/apps/files_external/userstorages/".$backendID;
+		curl_setopt($curl, CURLOPT_URL, $url);
+		/*curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+			'Content-Type: application/json',
+		));*/
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+
+		// EXECUTE:
+		$result = curl_exec($curl);
+		if(!$result){die("Connection Failure");}
+		curl_close($curl);
+
+        return $newToken;
+    }
 
 }
