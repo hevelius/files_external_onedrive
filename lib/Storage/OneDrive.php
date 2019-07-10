@@ -169,7 +169,7 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
             'refresh_token' => $this->token->refresh_token
 		]);  
 
-		$newToken = json_encode($newToken, JSON_UNESCAPED_SLASHES);
+		$newToken = json_encode($newToken);
 
 		$backendID = 96;
 		$key = "token";
