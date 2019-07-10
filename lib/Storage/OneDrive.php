@@ -96,9 +96,6 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 
 			$this->accessToken = $this->token->access_token;
 
-			$storageConfig = new StorageConfig();
-			$result = $storageConfig->find(94);
-
 			$this->client = new Graph();
 			$this->client->setAccessToken($this->accessToken);
 		
