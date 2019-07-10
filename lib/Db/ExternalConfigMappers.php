@@ -29,7 +29,7 @@ class ExternalConfigMappers extends Mapper {
         $qb = $this->db->getQueryBuilder();
         $qb->update($this->getTableName())
         ->set("value", $token)
-        ->where("mount_id = ? AND key = JSON_QUOTE(?)");
+        ->where("mount_id = ? AND key = ?");
  		
  		$qb->execute();
     }

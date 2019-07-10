@@ -89,9 +89,9 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 
 			if($this->token !== null){
 				$now = time() + 300;
-				//if($this->token->expires <= $now){
+				if($this->token->expires <= $now){
 					$this->token=json_decode($this->refreshToken($this->token));
-				//}
+				}
 			}
 
 			$this->accessToken = $this->token->access_token;
