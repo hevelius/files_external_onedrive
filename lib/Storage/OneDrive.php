@@ -169,7 +169,7 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
             'refresh_token' => $this->token->refresh_token
 		]);       
 
-		$backendID = 94;
+		$backendID = 96;
 		$key = "token";
 
 		$app = new \OCP\AppFramework\App(APP_NAME);
