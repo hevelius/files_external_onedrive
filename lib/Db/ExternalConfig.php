@@ -10,6 +10,7 @@ class ExternalConfig extends Entity implements JsonSerializable {
     protected $mountId;
     protected $key;
     protected $value;
+    protected $configId;
 
     public function jsonSerialize() {
         return [
