@@ -7,15 +7,15 @@ use OCP\AppFramework\Db\Entity;
 
 class ExternalConfig extends Entity implements JsonSerializable {
 
-    protected $config_id;
-    protected $mount_id;
+    protected $configId;
+    protected $mountId;
     protected $key;
     protected $value;
 
     public function jsonSerialize() {
         return [
-            'configId' => $this->config_id,
-            'mountId' => $this->mount_id,
+            'config_id' => $this->config_id,
+            'mount_id' => $this->mount_id,
             'key' => $this->key,
             'value' => $this->value
         ];
