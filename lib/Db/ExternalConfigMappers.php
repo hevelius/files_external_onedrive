@@ -27,9 +27,9 @@ class ExternalConfigMappers extends Mapper {
 
     public function updateTokenByMountIdAndKey($mount_id, $key, $token) {
         $qb = $this->db->getQueryBuilder();
-        $qb->update($this->getTableName(), 'o')
-        ->set("o.value", $token)
-        ->where("o.mount_id = ? AND o.key = ?");
+        $qb->update($this->getTableName())
+        ->set("value", $token)
+        ->where("mount_id = ? AND key = '?'");
  		
  		$qb->execute();
     }
