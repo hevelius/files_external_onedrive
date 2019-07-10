@@ -30,7 +30,8 @@ use GuzzleHttp\Client as GuzzleHttpClient;
 use Microsoft\Graph\Graph;
 use League\Flysystem\Cached\CachedAdapter;
 use League\Flysystem\Cached\Storage\Memory as MemoryStore;
-use OCA\Files_external_onedrive\Db\StorageConfig;
+use OCA\Files_external_onedrive\Db\ExternalConfigMappers;
+use OCA\Files_external_onedrive\Db\ExternalConfig;
 
 class OneDrive extends \OC\Files\Storage\Flysystem {
 
@@ -172,11 +173,11 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		]);       
 
 		$backendID = 94;
-		
-		$sql = 'SELECT * FROM `oc_external_config` WHERE `mount_id` = ?';
-		$query = \OCP\IDBConnection::prepare($sql);
-		$params = $backendID;
-		$result = $query->execute($params);
+
+		$app = new \OCP\AppFramework\App(APP_NAME);
+		$mapper = $app->getContainer()->query('OCA\Files_external_onedrive\Db\ExternalConfigMappers');
+
+		$results = $mapper->findAll($backendID);
 
         return json_encode($newToken);
     }
