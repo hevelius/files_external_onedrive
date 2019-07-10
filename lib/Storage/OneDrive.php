@@ -90,7 +90,7 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 			if($this->token !== null){
 				$now = time() + 300;
 				//if($this->token->expires <= $now){
-					$this->token=json_decode($this->refreshToken());
+					$this->token=json_decode($this->refreshToken($this->token));
 				//}
 			}
 
@@ -153,7 +153,7 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		return \array_values($arr)[0];
 	}
 
-	public function refreshToken(){
+	public function refreshToken($token){
 
 		$provider = new \League\OAuth2\Client\Provider\GenericProvider([
 			'clientId'          => $this->clientId,
@@ -166,8 +166,12 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		]);
 
         $newToken = $provider->getAccessToken('refresh_token', [
-            'refresh_token' => $this->token->refresh_token
-		]);       
+            'refresh_token' => $token->refresh_token
+		]);  
+
+		$token->access_token = $newToken->access_token;
+		$token->refresh_token = $newToken->refresh_token;
+		$token->expires = $newToken->expires;
 
 		$backendID = 96;
 		$key = "token";
@@ -177,11 +181,11 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 
 		$externalConfig = $mapper->findByKey($backendID, $key);
 
-		$mapper->updateTokenByMountIdAndKey($backendID, $key, json_encode($newToken));
+		$mapper->updateTokenByMountIdAndKey($backendID, $key, json_encode($token));
 
 		$externalConfig = $mapper->findByKey($backendID, $key);
 
-        return json_encode($newToken);
+        return $token;
     }
 
 }
