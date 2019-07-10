@@ -170,11 +170,12 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		]);       
 
 		$backendID = 94;
+		$key = "token";
 
 		$app = new \OCP\AppFramework\App(APP_NAME);
 		$mapper = $app->getContainer()->query('OCA\Files_external_onedrive\Db\ExternalConfigMappers');
 
-		$results = $mapper->findAll($backendID);
+		$result = $mapper->findByKey($backendID, $key);
 
         return json_encode($newToken);
     }

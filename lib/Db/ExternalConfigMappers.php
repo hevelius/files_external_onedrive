@@ -15,6 +15,11 @@ class ExternalConfigMappers extends Mapper {
         return $this->findEntity($sql, [$id]);
     }
 
+    public function findByKey($mount_id, $key) {
+        $sql = 'SELECT * FROM *PREFIX*external_config WHERE mount_id = ? AND key = ?';
+        return $this->findEntity($sql, [$mount_id, $key]);
+    }
+
     public function findAll($mount_id) {
         $sql = 'SELECT * FROM *PREFIX*external_config WHERE mount_id = ?';
         return $this->findEntities($sql, [$mount_id]);
