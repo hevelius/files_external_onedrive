@@ -169,8 +169,8 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
             'refresh_token' => $token->refresh_token
 		]);  
 
-		$token->access_token = $newToken->access_token;
-		$token->refresh_token = $newToken->refresh_token;
+		$token->access_token = $newToken->accessToken;
+		$token->refresh_token = $newToken->refreshToken;
 		$token->expires = $newToken->expires;
 
 		$backendID = 96;
