@@ -15,6 +15,7 @@ class ExternalConfig extends Entity implements JsonSerializable {
     public function jsonSerialize() {
         return [
             'id' => $this->configId,
+            'config_id' => $this->configId,
             'mount_id' => $this->mountId,
             'key' => $this->key,
             'value' => $this->value
