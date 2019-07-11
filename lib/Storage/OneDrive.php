@@ -85,6 +85,13 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 			
 			$this->token = json_decode($params['token']);
 
+			if($this->token !== null){
+				$now = time() + 300;
+				if($this->token->expires <= $now){
+					$this->token=json_decode($this->refreshToken($this->token));
+				}
+			}
+
 			$this->accessToken = $this->token->access_token;
 
 			$this->client = new Graph();
@@ -143,5 +150,52 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		\arsort($arr);
 		return \array_values($arr)[0];
 	}
+
+	public function refreshToken(){
+
+		$provider = new \League\OAuth2\Client\Provider\GenericProvider([
+			'clientId'          => $this->clientId,
+			'clientSecret'      => $this->clientSecret,
+			'redirectUri'       => '',
+			'urlAuthorize'            => "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+			'urlAccessToken'          => "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+			'urlResourceOwnerDetails' => '',
+			'scopes'					  => 'Files.Read Files.Read.All Files.ReadWrite Files.ReadWrite.All User.Read offline_access'
+		]);
+
+        $newToken = $provider->getAccessToken('refresh_token', [
+            'refresh_token' => $this->token->refresh_token
+		]);  
+
+		$newToken = json_encode($newToken);
+
+		$app = new \OCP\AppFramework\App(APP_NAME);
+		$container = $app->getContainer();
+		$server = $container->getServer();
+		$user = $server->getUserSession()->getUser();
+
+		$DBConfigService = $server->query('OCA\\Files_External\\Service\\DBConfigService');
+		
+		$mountId = null;
+		$mounts = $DBConfigService->getUserMountsFor(3, $user->getUID());
+		$mountId = null;
+
+		foreach($mounts as $mount) {
+			if ($mount['config']['client_id'] == $this->clientId) {
+				$mountId = $mount['mount_id'];
+				break;
+			}
+		}
+
+		if ($mountId == null) {
+			throw new \Exception('OneDrive storage not yet configured');
+		}
+
+		$key = "token";
+
+		$DBConfigService->setConfig($mountId, $key, $newToken);
+
+        return $newToken;
+    }
 
 }

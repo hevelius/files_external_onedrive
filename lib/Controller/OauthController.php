@@ -31,7 +31,6 @@ use OCP\IL10N;
 use OCP\IRequest;
 use Microsoft\Graph\Graph;
 use GuzzleHttp\Client as GuzzleHttpClient;
-use TheNetworg\OAuth2\Client\Provider\Azure;
 
 /**
  * Oauth controller for OneDrive
