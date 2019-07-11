@@ -94,6 +94,8 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 				}
 			}
 
+			$user = OCP\User::getUser();
+
 			$this->accessToken = $this->token->access_token;
 
 			$this->client = new Graph();
