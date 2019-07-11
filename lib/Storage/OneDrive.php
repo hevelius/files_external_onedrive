@@ -92,23 +92,6 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 				}
 			}
 
-			$app = new \OCP\AppFramework\App(APP_NAME);
-			$container = $app->getContainer();
-        	$server = $container->getServer();
-			$user = $server->getUserSession()->getUser();
-
-			$DBConfigService = $server->query('OCA\\Files_External\\Service\\DBConfigService');
-		
-			$mounts = $DBConfigService->getUserMountsFor(3, $user->getUID());
-			$mountId = null;
-
-			foreach($mounts as $mount) {
-				if ($mount['config']['client_id'] == $this->clientId) {
-					$mountId = $mount['mount_id'];
-					break;
-				}
-			}
-
 			$this->accessToken = $this->token->access_token;
 
 			$this->client = new Graph();
@@ -188,13 +171,29 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 
 		$app = new \OCP\AppFramework\App(APP_NAME);
 		$container = $app->getContainer();
-        $server = $container->getServer();
+		$server = $container->getServer();
+		$user = $server->getUserSession()->getUser();
+
 		$DBConfigService = $server->query('OCA\\Files_External\\Service\\DBConfigService');
 		
-		$mountID = 98;
+		$mountId = null;
+		$mounts = $DBConfigService->getUserMountsFor(3, $user->getUID());
+		$mountId = null;
+
+		foreach($mounts as $mount) {
+			if ($mount['config']['client_id'] == $this->clientId) {
+				$mountId = $mount['mount_id'];
+				break;
+			}
+		}
+
+		if ($mountId == null) {
+			throw new \Exception('OneDrive storage not yet configured');
+		}
+
 		$key = "token";
 
-		$DBConfigService->setConfig($mountID, $key, $newToken);
+		$DBConfigService->setConfig($mountId, $key, $newToken);
 
         return $newToken;
     }
