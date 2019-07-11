@@ -99,7 +99,15 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 
 			$DBConfigService = $server->query('OCA\\Files_External\\Service\\DBConfigService');
 		
-			$results = $DBConfigService->getUserMountsFor(3, $user->getUID());
+			$mounts = $DBConfigService->getMountsForUser(3, $user->getUID());
+			$mountId = null;
+
+			foreach($mounts as $mount) {
+				if ($mount->config->client_id == $this->clientId) {
+					$mountId = $mount->mount_id;
+					break;
+				}
+			}
 
 			$this->accessToken = $this->token->access_token;
 
