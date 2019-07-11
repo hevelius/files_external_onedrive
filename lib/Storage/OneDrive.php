@@ -103,8 +103,8 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 			$mountId = null;
 
 			foreach($mounts as $mount) {
-				if ($mount->config->client_id == $this->clientId) {
-					$mountId = $mount->mount_id;
+				if ($mount['config']['client_id'] == $this->clientId) {
+					$mountId = $mount['mount_id'];
 					break;
 				}
 			}
