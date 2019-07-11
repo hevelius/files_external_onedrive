@@ -181,11 +181,11 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 
 		$mapper = $app->getContainer()->query('OCA\Files_external_onedrive\Db\ExternalConfigMappers');
 
-		$externalConfig = $mapper->findByKey($backendID, $key);
+		$externalConfig = $mapper->findByKey($mountID, $key);
 
 		$DBConfigService->setConfig($mountID, $key, $newToken);
 
-		$externalConfig = $mapper->findByKey($backendID, $key);
+		$externalConfig = $mapper->findByKey($mountID, $key);
 
         return $newToken;
     }
