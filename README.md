@@ -30,7 +30,9 @@ References:
 * https://github.com/NastuzziSamy/files_external_gdrive
 * https://github.com/icewind1991/files_external_dropbox
 
+## Latest features added
+* a logic to refresh token (maybe it's not an elegat way to do this). After new token came back it's saved directly in Files_external config table)
+* upload large files (over graph limit of 4MB per request) [using uploadSession]
+
 ## ToDo
-* add logic to refresh token
-* upload large files (graph limit upload to 4MB)
 * add unit tests
