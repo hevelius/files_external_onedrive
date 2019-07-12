@@ -45,7 +45,7 @@ class OauthController extends Controller {
 
 	const URL_AUTHORIZE = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize';
 	const URL_ACCESS_TOKEN = 'https://login.microsoftonline.com/common/oauth2/v2.0/token';
-	const SCOPES = 'Files.Read Files.Read.All Files.ReadWrite Files.ReadWrite.All User.Read offline_access';
+	const SCOPES = 'Files.Read Files.Read.All Files.ReadWrite Files.ReadWrite.All User.Read Sites.ReadWrite.All offline_access';
 
 	/**
 	 * Creates a new storages controller.

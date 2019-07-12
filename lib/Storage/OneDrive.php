@@ -160,7 +160,7 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 			'urlAuthorize'            => "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 			'urlAccessToken'          => "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 			'urlResourceOwnerDetails' => '',
-			'scopes'					  => 'Files.Read Files.Read.All Files.ReadWrite Files.ReadWrite.All User.Read offline_access'
+			'scopes'					  => 'Files.Read Files.Read.All Files.ReadWrite Files.ReadWrite.All User.Read Sites.ReadWrite.All offline_access'
 		]);
 
         $newToken = $provider->getAccessToken('refresh_token', [
