@@ -11,8 +11,8 @@ Nextcloud accesses OneDrive through the Microsoft GRAPH API and uses Oauth2 auth
     <namespace>Files_external_onedrive</namespace>
     <category>tools</category>
     <types>
-		<filesystem/>
-	</types>
+	    <filesystem/>
+    </types>
     <website>https://github.com/hevelius/files_external_onedrive</website>
     <bugs>https://github.com/hevelius/files_external_onedrive/issues</bugs>
     <repository type="git">https://github.com/hevelius/files_external_onedrive.git</repository>
