@@ -19,8 +19,9 @@ composer install
 - Connecting OneDrive is a little more work because you have to create a onedrive app. Log into the https://portal.azure.com/ page and search Azure Active Directory - App Registration
 - Click on add new registration and fill form.
 - Name Your App and then click Create App
-- Under the section **OAuth2** Redirect URIs add a new URL ```http://path/to/nextcloud/index.php/settings/admin?sectionid=storage``` _(Replace http://path/to/nextcloud/index.php with you valid nextcloud installation path)_
-- Then Go to nextcloud ```/settings/admin?sectionid=storage``` and Add a new storage **onedrive**
+- Under the section **Authentication** Redirect URIs add a new URL ```http://path/to/nextcloud/index.php/settings/admin?sectionid=storage``` _(Replace http://path/to/nextcloud/index.php with you valid nextcloud installation path)_
+- Under the section **Certificates and secrets** add new client secret
+- Copy Client Id and client secret then Go to nextcloud ```/settings/admin?sectionid=storage``` and Add a new storage **onedrive**
 - Fill the details Client Id, Client Secrets from you onedrive App page
 - Click Grant Access and then you will be redirected for OAuth login
 - After completing the OAuth you will be redirect back to Storage Section and you should see **green** mark along your storage configuration
