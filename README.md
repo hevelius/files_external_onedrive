@@ -16,8 +16,8 @@ composer install
 - Fire up the files page to see the ```OneDrive``` mounted as external storage
 
 ## Configuring OAuth2
-- Connecting OneDrive is a little more work because you have to create a onedrive app. Log into the https://portal.azure.com/ page and click Create Your App
-- Then choose which folders to share, or to share everything in your onedrive.
+- Connecting OneDrive is a little more work because you have to create a onedrive app. Log into the https://portal.azure.com/ page and search Azure Active Directory - App Registration
+- Click on add new registration and fill form.
 - Name Your App and then click Create App
 - Under the section **OAuth2** Redirect URIs add a new URL ```http://path/to/nextcloud/index.php/settings/admin?sectionid=storage``` _(Replace http://path/to/nextcloud/index.php with you valid nextcloud installation path)_
 - Then Go to nextcloud ```/settings/admin?sectionid=storage``` and Add a new storage **onedrive**
