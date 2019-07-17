@@ -5,7 +5,7 @@
     <summary>Integrate OneDrive as an external storage</summary>
     <description><![CDATA[The OneDrive Backend allows administrators and users to add their own OneDrive as folders in Nextcloud. This offers an easy way for users to access OneDrive data in the same place where they find their other files.
 Nextcloud accesses OneDrive through the Microsoft GRAPH API and uses Oauth2 authentication.]]></description>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <licence>agpl</licence>
     <author>Mario Perrotta</author>
     <namespace>Files_external_onedrive</namespace>
