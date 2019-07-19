@@ -33,32 +33,32 @@ use League\Flysystem\Cached\Storage\Memory as MemoryStore;
 
 class OneDrive extends \OC\Files\Storage\Flysystem {
 
-    const APP_NAME = 'files_external_onedrive';
+	const APP_NAME = 'files_external_onedrive';
 
-    /**
-     * @var string
-     */
-    protected $clientId;
+	/**
+	 * @var string
+	 */
+	protected $clientId;
 
-    /**
-     * @var string
-     */
-    protected $clientSecret;
+	/**
+	 * @var string
+	 */
+	protected $clientSecret;
 
-    /**
-     * @var string
-     */
-    protected $accessToken;
+	/**
+	 * @var string
+	 */
+	protected $accessToken;
 
-    /**
-     * @var Client
-     */
-    private $client;
-    private $id;
+	/**
+	 * @var Client
+	 */
+	private $client;
+	private $id;
 	private $options;
 	protected $adapter;
 	protected $logger;
-	
+
 	private static $tempFiles = [];
 
 	/**
@@ -77,12 +77,11 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 	}
 
 	public function __construct($params) {
-        if (isset($params['client_id']) && isset($params['client_secret']) && isset($params['token'])
-            && isset($params['configured']) && $params['configured'] === 'true'
-        ) {
-            $this->clientId = $params['client_id'];
-            $this->clientSecret = $params['client_secret'];
-			
+		if (isset($params['client_id']) && isset($params['client_secret']) && isset($params['token'])
+				&& isset($params['configured']) && $params['configured'] === 'true') {
+			$this->clientId = $params['client_id'];
+			$this->clientSecret = $params['client_secret'];
+
 			$this->token = json_decode($params['token']);
 
 			if($this->token !== null){
@@ -96,9 +95,15 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 
 			$this->client = new Graph();
 			$this->client->setAccessToken($this->accessToken);
-		
+
 			$this->root = isset($params['root']) ? $params['root'] : '/';
-			$this->id = 'onedrive::' . $this->clientId; //. '/' . $this->root;
+			
+			$app = new \OCP\AppFramework\App(APP_NAME);
+			$container = $app->getContainer();
+			$server = $container->getServer();
+			$user = $server->getUserSession()->getUser();
+
+			$this->id = 'onedrive::' . $this->clientId . '/' . $user->getUID();
 			$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
 
 			$cacheStore = new MemoryStore();
@@ -107,12 +112,11 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 			$this->buildFlySystem($this->adapter);
 			$this->logger = \OC::$server->getLogger();
 
-        } else if (isset($params['configured']) && $params['configured'] === 'false') {
-            throw new \Exception('OneDrive storage not yet configured');
-        } else {
-            throw new \Exception('Creating OneDrive storage failed');
-        }
-
+		} else if (isset($params['configured']) && $params['configured'] === 'false') {
+				throw new \Exception('OneDrive storage not yet configured');
+		} else {
+				throw new \Exception('Creating OneDrive storage failed');
+		}
 	}
 
 	public function getId() {
