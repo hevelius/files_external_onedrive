@@ -21,6 +21,7 @@ composer install
 - Name Your App and then click Create App
 - Under the section **Authentication** Redirect URIs add a new URL ```http://path/to/nextcloud/index.php/settings/user/externalstorages``` _(Replace http://path/to/nextcloud/index.php with you valid nextcloud installation path)_
 - Under the section **Certificates and secrets** add new client secret
+- Under the section **Authorization API** add auth for [ User.Read | Files.ReadWrite.All | offline_access ] (the last is necessary to perform a correct token refresh)
 - Copy Client Id and client secret then Go to nextcloud ```/settings/user/externalstorages``` and Add a new storage **OneDrive**
 - Fill the details Client Id, Client Secrets from you onedrive App page
 - Click Grant Access and then you will be redirected for OAuth login
