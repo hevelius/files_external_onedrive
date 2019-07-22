@@ -100,7 +100,7 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		
 			$this->root = isset($params['root']) ? $params['root'] : '/';
 			
-			$this->id = 'onedrive::' . $this->clientId. '/' . $this->token->expires;
+			$this->id = 'onedrive::' . $this->clientId. '/' . substr($this->token->refresh_token,0,10);
 			$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
 
 			$cacheStore = new MemoryStore();
