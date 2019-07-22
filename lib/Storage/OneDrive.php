@@ -77,15 +77,12 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 	}
 
 	public function __construct($params) {
-        if (isset($params['client_id']) && isset($params['client_secret']) && isset($params['token'])
-            && isset($params['configured']) && $params['configured'] === 'true'
-        ) {
-            $this->clientId = $params['client_id'];
-            $this->clientSecret = $params['client_secret'];
+        	if (isset($params['client_id']) && isset($params['client_secret']) && isset($params['token']) && isset($params['configured']) && $params['configured'] === 'true') {
+            		$this->clientId = $params['client_id'];
+            		$this->clientSecret = $params['client_secret'];
 			$app = new \OCP\AppFramework\App(self::APP_NAME);
 			$container = $app->getContainer();
 			$this->server = $container->getServer();
-		//	$user = $server->getUserSession()->getUser();
 			
 			$this->token = json_decode($params['token']);
 
@@ -103,11 +100,6 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		
 			$this->root = isset($params['root']) ? $params['root'] : '/';
 			
-		//	$app = new \OCP\AppFramework\App(self::APP_NAME);
-		//	$container = $app->getContainer();
-		//	$this->server = $container->getServer();
-		//	$user = $server->getUserSession()->getUser();
-			
 			$this->id = 'onedrive::' . $this->clientId. '/' . $this->token->expires;
 			$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
 
@@ -117,11 +109,11 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 			$this->buildFlySystem($this->adapter);
 			$this->logger = \OC::$server->getLogger();
 
-        } else if (isset($params['configured']) && $params['configured'] === 'false') {
-            throw new \Exception('OneDrive storage not yet configured');
-        } else {
-            throw new \Exception('Creating OneDrive storage failed');
-        }
+        	} else if (isset($params['configured']) && $params['configured'] === 'false') {
+            		throw new \Exception('OneDrive storage not yet configured');
+        	} else {
+            		throw new \Exception('Creating OneDrive storage failed');
+        	}
 
 	}
 
@@ -129,8 +121,8 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		return $this->id;
 	}
 
-    public function test()
-    {
+    	public function test()
+    	{
 		// TODO: add test Storage
 		return true;
 	}
@@ -173,15 +165,12 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 			'scopes'					  => 'Files.Read Files.Read.All Files.ReadWrite Files.ReadWrite.All User.Read Sites.ReadWrite.All offline_access'
 		]);
 
-        $newToken = $provider->getAccessToken('refresh_token', [
-            'refresh_token' => $this->token->refresh_token
+        	$newToken = $provider->getAccessToken('refresh_token', [
+            		'refresh_token' => $this->token->refresh_token
 		]);  
 
 		$newToken = json_encode($newToken);
 
-		//$app = new \OCP\AppFramework\App(APP_NAME);
-		//$container = $app->getContainer();
-		//$this->server = $container->getServer();
 		$user = $this->server->getUserSession()->getUser();
 
 		$DBConfigService = $this->server->query('OCA\\Files_External\\Service\\DBConfigService');
@@ -215,7 +204,7 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 
 		$DBConfigService->setConfig($mountId, $key, $newToken);
 
-        return $newToken;
+        	return $newToken;
     }
 
 }
