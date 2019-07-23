@@ -84,12 +84,12 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 			$container = $app->getContainer();
 			$this->server = $container->getServer();
 			
-			$this->token = json_decode($params['token']);
+			$this->token = json_decode(base64_decode($params['token']));
 
 			if($this->token !== null){
 				$now = time() + 300;
 				if($this->token->expires <= $now){
-					$this->token=json_decode($this->refreshToken($this->token));
+					$this->token=json_decode(base64_decode($this->refreshToken($this->token)));
 				}
 			}
 
@@ -100,7 +100,8 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		
 			$this->root = isset($params['root']) ? $params['root'] : '/';
 			
-			$this->id = 'onedrive::' . $this->clientId. '/' . substr($this->token->refresh_token,0,10);
+			$this->id = 'onedrive::' . $this->clientId. '::' . $this->token->code_uid;
+			
 			$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
 
 			$cacheStore = new MemoryStore();
@@ -167,9 +168,13 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 
         	$newToken = $provider->getAccessToken('refresh_token', [
             		'refresh_token' => $this->token->refresh_token
-		]);  
+		]);
 
-		$newToken = json_encode($newToken);
+		$newToken = json_encode($token);
+                $newToken = json_decode($newToken, true);
+                $newToken['code_uid'] = $this->token->code_uid;
+
+		$newToken = base64_encode(json_encode($newToken));
 
 		$user = $this->server->getUserSession()->getUser();
 

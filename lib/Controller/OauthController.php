@@ -144,11 +144,16 @@ class OauthController extends Controller {
                                 Http::STATUS_BAD_REQUEST
                             );
                         }
+
+			$token = json_encode($token);
+			$token = json_decode($token, true);
+			$token['code_uid'] = uniqid('',true);
+
                         return new DataResponse(
                             [
                                 'status' => 'success',
                                 'data' => [
-                                    'token' => json_encode($token),
+                                    'token' => base64_encode(json_encode($token)),
                                 ]
                             ]
                         );
