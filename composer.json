@@ -28,16 +28,9 @@
         "source": "https://github.com/hevelius/files_external_onedrive"
     },
     
-    "repositories": [
-        {
-            "type": "git",
-            "url": "https://github.com/hevelius/flysystem-onedrive.git"
-        }
-    ],
-
     "require": {
         "league/flysystem-cached-adapter": "*",
-	    "nicolasbeauvais/flysystem-onedrive": "dev-master",
+	"hevelius/flysystem-onedrive": "*",
         "league/oauth2-client": "*",
         "php":      ">= 5.4 || >= 7.0",
         "ext-curl": "*"

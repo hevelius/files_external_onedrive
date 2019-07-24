@@ -24,7 +24,7 @@ namespace OCA\Files_external_onedrive\Storage;
 use League\Flysystem\Config;
 use League\Flysystem\Util;
 
-class Adapter extends \NicolasBeauvais\FlysystemOneDrive\OneDriveAdapter
+class Adapter extends \MarioPerrotta\FlysystemOneDrive\OneDriveAdapter
 {
 
     /**
