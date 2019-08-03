@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Mario Perrotta <mario.perrotta@unimi.it>
  *
@@ -30,16 +31,19 @@ use OCA\Files_External\Service\BackendService;
 /**
  * @package OCA\Files_external_onedrive\AppInfo
  */
-class Application extends App implements IBackendProvider {
+class Application extends App implements IBackendProvider
+{
 
-    public function __construct(array $urlParams = []) {
+    public function __construct(array $urlParams = [])
+    {
         parent::__construct('files_external_onedrive', $urlParams);
     }
 
     /**
      * @{inheritdoc}
      */
-    public function getBackends() {
+    public function getBackends()
+    {
         $container = $this->getContainer();
         $backends = [
             $container->query('OCA\Files_external_onedrive\Backend\OneDrive'),
@@ -54,5 +58,4 @@ class Application extends App implements IBackendProvider {
         $backendService = $server->query('OCA\\Files_External\\Service\\BackendService');
         $backendService->registerBackendProvider($this);
     }
-
 }

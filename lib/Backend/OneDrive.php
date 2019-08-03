@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Mario Perrotta <mario.perrotta@unimi.it>
  *
@@ -27,25 +28,24 @@ use OCP\IL10N;
 use OCA\Files_External\Lib\Backend\Backend;
 use OCA\Files_External\Lib\Auth\AuthMechanism;
 
-class OneDrive extends Backend {
+class OneDrive extends Backend
+{
 
     /**
      * onedrive constructor.
      * @param IL10N $l
      */
-    public function __construct(IL10N $l) {
-	$appWebPath = \OC_App::getAppWebPath('files_external_onedrive');
-        
-	$this
+    public function __construct(IL10N $l)
+    {
+        $appWebPath = \OC_App::getAppWebPath('files_external_onedrive');
+
+        $this
             ->setIdentifier('files_external_onedrive')
             ->addIdentifierAlias('\OC\Files\External_Storage\OneDrive') // legacy compat
             ->setStorageClass('\OCA\Files_external_onedrive\Storage\OneDrive')
             ->setText($l->t('OneDrive'))
-            ->addParameters([
-                
-            ])
+            ->addParameters([])
             ->addAuthScheme(AuthMechanism::SCHEME_OAUTH2)
-            ->addCustomJs("../../../$appWebPath/js/onedrive");    
+            ->addCustomJs("../../../$appWebPath/js/onedrive");
     }
-
 }

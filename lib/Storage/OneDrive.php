@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Mario Perrotta <mario.perrotta@unimi.it>
  *
@@ -31,41 +32,42 @@ use Microsoft\Graph\Graph;
 use League\Flysystem\Cached\CachedAdapter;
 use League\Flysystem\Cached\Storage\Memory as MemoryStore;
 
-class OneDrive extends \OC\Files\Storage\Flysystem {
+class OneDrive extends \OC\Files\Storage\Flysystem
+{
 
-    const APP_NAME = 'files_external_onedrive';
+	const APP_NAME = 'files_external_onedrive';
 
-    /**
-     * @var string
-     */
-    protected $clientId;
+	/**
+	 * @var string
+	 */
+	protected $clientId;
 
-    /**
-     * @var string
-     */
-    protected $clientSecret;
+	/**
+	 * @var string
+	 */
+	protected $clientSecret;
 
-    /**
-     * @var string
-     */
-    protected $accessToken;
+	/**
+	 * @var string
+	 */
+	protected $accessToken;
 
-    /**
-     * @var Client
-     */
-    private $client;
-    private $id;
+	/**
+	 * @var Client
+	 */
+	private $client;
+	private $id;
 	private $options;
 	protected $adapter;
 	protected $logger;
-	
+
 	private static $tempFiles = [];
 
 	/**
-	* Initialize the storage backend with a flysytem adapter
-	* @override
-	* @param \League\Flysystem\Filesystem $fs
-	*/
+	 * Initialize the storage backend with a flysytem adapter
+	 * @override
+	 * @param \League\Flysystem\Filesystem $fs
+	 */
 	public function setFlysystem($fs)
 	{
 		$this->flysystem = $fs;
@@ -76,20 +78,21 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		$this->adapter = $adapter;
 	}
 
-	public function __construct($params) {
-        	if (isset($params['client_id']) && isset($params['client_secret']) && isset($params['token']) && isset($params['configured']) && $params['configured'] === 'true') {
-            		$this->clientId = $params['client_id'];
-            		$this->clientSecret = $params['client_secret'];
+	public function __construct($params)
+	{
+		if (isset($params['client_id']) && isset($params['client_secret']) && isset($params['token']) && isset($params['configured']) && $params['configured'] === 'true') {
+			$this->clientId = $params['client_id'];
+			$this->clientSecret = $params['client_secret'];
 			$app = new \OCP\AppFramework\App(self::APP_NAME);
 			$container = $app->getContainer();
 			$this->server = $container->getServer();
-			
+
 			$this->token = json_decode(base64_decode($params['token']));
 
-			if($this->token !== null){
+			if ($this->token !== null) {
 				$now = time() + 300;
-				if($this->token->expires <= $now){
-					$this->token=json_decode(base64_decode($this->refreshToken($this->token)));
+				if ($this->token->expires <= $now) {
+					$this->token = json_decode(base64_decode($this->refreshToken($this->token)));
 				}
 			}
 
@@ -97,11 +100,11 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 
 			$this->client = new Graph();
 			$this->client->setAccessToken($this->accessToken);
-		
+
 			$this->root = isset($params['root']) ? $params['root'] : '/';
-			
-			$this->id = 'onedrive::' . $this->clientId. '::' . $this->token->code_uid;
-			
+
+			$this->id = 'onedrive::' . $this->clientId . '::' . $this->token->code_uid;
+
 			$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
 
 			$cacheStore = new MemoryStore();
@@ -109,21 +112,20 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 
 			$this->buildFlySystem($this->adapter);
 			$this->logger = \OC::$server->getLogger();
-
-        	} else if (isset($params['configured']) && $params['configured'] === 'false') {
-            		throw new \Exception('OneDrive storage not yet configured');
-        	} else {
-            		throw new \Exception('Creating OneDrive storage failed');
-        	}
-
+		} else if (isset($params['configured']) && $params['configured'] === 'false') {
+			throw new \Exception('OneDrive storage not yet configured');
+		} else {
+			throw new \Exception('Creating OneDrive storage failed');
+		}
 	}
 
-	public function getId() {
+	public function getId()
+	{
 		return $this->id;
 	}
 
-    	public function test()
-    	{
+	public function test()
+	{
 		// TODO: add test Storage
 		return true;
 	}
@@ -131,7 +133,8 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function filemtime($path) {
+	public function filemtime($path)
+	{
 		if ($this->is_dir($path)) {
 			return $this->adapter->getTimestamp($path);
 		} else {
@@ -139,14 +142,16 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		}
 	}
 
-	public function file_exists($path) {
-        if ($path === '' || $path === '/' || $path === '.') {
-            return true;
-        }
-        return parent::file_exists($path);
+	public function file_exists($path)
+	{
+		if ($path === '' || $path === '/' || $path === '.') {
+			return true;
+		}
+		return parent::file_exists($path);
 	}
-	
-	protected function getLargest($arr, $default = 0) {
+
+	protected function getLargest($arr, $default = 0)
+	{
 		if (\count($arr) === 0) {
 			return $default;
 		}
@@ -154,7 +159,8 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 		return \array_values($arr)[0];
 	}
 
-	public function refreshToken(){
+	public function refreshToken()
+	{
 
 		$provider = new \League\OAuth2\Client\Provider\GenericProvider([
 			'clientId'          => $this->clientId,
@@ -166,34 +172,34 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 			'scopes'					  => 'Files.Read Files.Read.All Files.ReadWrite Files.ReadWrite.All User.Read Sites.ReadWrite.All offline_access'
 		]);
 
-        	$newToken = $provider->getAccessToken('refresh_token', [
-            		'refresh_token' => $this->token->refresh_token
+		$newToken = $provider->getAccessToken('refresh_token', [
+			'refresh_token' => $this->token->refresh_token
 		]);
 
 		$newToken = json_encode($newToken);
-                $newToken = json_decode($newToken, true);
-                $newToken['code_uid'] = $this->token->code_uid;
+		$newToken = json_decode($newToken, true);
+		$newToken['code_uid'] = $this->token->code_uid;
 
 		$newToken = base64_encode(json_encode($newToken));
 
 		$user = $this->server->getUserSession()->getUser();
 
 		$DBConfigService = $this->server->query('OCA\\Files_External\\Service\\DBConfigService');
-		
+
 		$mountId = null;
 		$mounts = $DBConfigService->getUserMountsFor(3, $user->getUID());
 
-		foreach($mounts as $mount) {
+		foreach ($mounts as $mount) {
 			if ($mount['config']['client_id'] == $this->clientId) {
 				$mountId = $mount['mount_id'];
 				break;
 			}
 		}
-		
+
 		if ($mountId == null) {
 			$mounts = $DBConfigService->getAdminMountsFor(3, $user->getUID());
 
-			foreach($mounts as $mount) {
+			foreach ($mounts as $mount) {
 				if ($mount['config']['client_id'] == $this->clientId) {
 					$mountId = $mount['mount_id'];
 					break;
@@ -209,7 +215,6 @@ class OneDrive extends \OC\Files\Storage\Flysystem {
 
 		$DBConfigService->setConfig($mountId, $key, $newToken);
 
-        	return $newToken;
-    }
-
+		return $newToken;
+	}
 }

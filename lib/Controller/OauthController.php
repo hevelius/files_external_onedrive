@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Mario Perrotta <mario.perrotta@unimi.it>
  *
@@ -35,7 +36,8 @@ use GuzzleHttp\Client as GuzzleHttpClient;
 /**
  * Oauth controller for OneDrive
  */
-class OauthController extends Controller {
+class OauthController extends Controller
+{
 	/**
 	 * L10N service
 	 *
@@ -95,18 +97,18 @@ class OauthController extends Controller {
 				'urlResourceOwnerDetails' => '',
 				'scopes'					  => self::SCOPES
 			]);
-			
-            $data=[
-    	    'client_id' => $clientId,
-	    	];
+
+			$data = [
+				'client_id' => $clientId,
+			];
 
 			if ($step !== null) {
-                   $step = (int) $step;
-                if ($step === 1) {
-                    try {
+				$step = (int) $step;
+				if ($step === 1) {
+					try {
 
 						$authUrl = $provider->getAuthorizationUrl();
-						
+
 						return new DataResponse(
 							[
 								'status' => 'success',
@@ -115,68 +117,67 @@ class OauthController extends Controller {
 								]
 							]
 						);
+					} catch (Exception $exception) {
+						return new DataResponse(
+							[
+								'status' => 'error',
+								'data' => [
+									'message' => $l->t('Step 1 failed. Exception: %s', [$exception->getMessage()]),
+								]
+							],
+							Http::STATUS_UNPROCESSABLE_ENTITY
+						);
+					}
+				} else if ($step === 2 && $code !== null) {
 
-                    } catch (Exception $exception) {
-                        return new DataResponse(
-                            [
-                                'status' => 'error',
-                                'data' => [
-                                    'message' => $l->t('Step 1 failed. Exception: %s', [$exception->getMessage()]),
-                                ]
-                            ],
-                            Http::STATUS_UNPROCESSABLE_ENTITY
-                        );
-                    }
-                } else if ($step === 2 && $code !== null) {
-					
 					try {
 
 						$token = $provider->getAccessToken('authorization_code', [
 							'code' => $code
 						]);
 
-                        if (!isset($token)) {
-                            return new DataResponse(
-                                [
-                                    'status' => 'error',
-                                    'data' => $token
-                                ],
-                                Http::STATUS_BAD_REQUEST
-                            );
-                        }
+						if (!isset($token)) {
+							return new DataResponse(
+								[
+									'status' => 'error',
+									'data' => $token
+								],
+								Http::STATUS_BAD_REQUEST
+							);
+						}
 
-			$token = json_encode($token);
-			$token = json_decode($token, true);
-			$token['code_uid'] = uniqid();
+						$token = json_encode($token);
+						$token = json_decode($token, true);
+						$token['code_uid'] = uniqid();
 
-                        return new DataResponse(
-                            [
-                                'status' => 'success',
-                                'data' => [
-                                    'token' => base64_encode(json_encode($token)),
-                                ]
-                            ]
-                        );
-                    } catch (Exception $exception) {
-                        return new DataResponse(
-                             [
-                                 'status' => 'error',
-                                 'data' => [
-                                     'message' => $l->t('Step 2 failed. Exception: %s', [$exception->getMessage()]),
-                                 ]
-                             ],
-                             Http::STATUS_UNPROCESSABLE_ENTITY
-                        );
-                    }
-                }
-           } 
-        }
-        return new DataResponse(
-            [
-                'status' => 'error',
-                'data' => [],
-            ],
-            Http::STATUS_BAD_REQUEST
-        );
-    }
+						return new DataResponse(
+							[
+								'status' => 'success',
+								'data' => [
+									'token' => base64_encode(json_encode($token)),
+								]
+							]
+						);
+					} catch (Exception $exception) {
+						return new DataResponse(
+							[
+								'status' => 'error',
+								'data' => [
+									'message' => $l->t('Step 2 failed. Exception: %s', [$exception->getMessage()]),
+								]
+							],
+							Http::STATUS_UNPROCESSABLE_ENTITY
+						);
+					}
+				}
+			}
+		}
+		return new DataResponse(
+			[
+				'status' => 'error',
+				'data' => [],
+			],
+			Http::STATUS_BAD_REQUEST
+		);
+	}
 }

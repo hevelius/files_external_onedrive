@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Samy NASTUZZI <samy@nastuzzi.fr>
  *
@@ -42,16 +43,4 @@ class Adapter extends \MarioPerrotta\FlysystemOneDrive\OneDriveAdapter
     {
         return $this->getMetadata($path);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    /*public function getMetadata($path)
-    {
-        $response = $this->client->getMetadata($path);
-        $responseContent = json_decode((string) $response->getBody());
-        $flysystemMetadata = new FlysystemMetadata(FlysystemMetadata::TYPE_FILE, $path);
-        $this->updateFlysystemMetadataFromResponseContent($flysystemMetadata, $responseContent);
-        return $flysystemMetadata->toArray();
-    }*/
 }

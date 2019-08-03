@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author Mario Perrotta <mario.perrotta@unimi.it>
  *
@@ -26,13 +27,14 @@ namespace Test\Files_external_onedrive;
 use Prophecy\Argument;
 //use Test\Files\Storage\Storage;
 
-class OneDrive extends Storage {
+class OneDrive extends Storage
+{
     private $config;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->config = json_decode(file_get_contents('./config.json'), true);
         $this->instance = new \OCA\Files_external_onedrive\Storage\OneDrive($this->config);
         parent::setUp();
     }
-
 }
