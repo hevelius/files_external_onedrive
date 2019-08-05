@@ -154,7 +154,7 @@ class OauthController extends Controller
 							[
 								'status' => 'success',
 								'data' => [
-									'token' => base64_encode(json_encode($token)),
+									'token' => base64_encode(gzdeflate(json_encode($token), 9)),
 								]
 							]
 						);
