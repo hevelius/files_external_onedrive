@@ -22,12 +22,14 @@ Connecting OneDrive is a little more work because you have to create a onedrive 
 ##### Create new app
 - Click New registration 
 - Name Your App
-- Make sure to select "Accounts in any organizational directory (Any Azure AD directory - Multitenant) and personal Microsoft accounts (e.g. Skype, Xbox)"
+- Make sure to select:  
+"Accounts in any organizational directory (Any Azure AD directory - Multitenant) and personal Microsoft accounts (e.g. Skype, Xbox)"
 - For **Redirect URL (optional)** add the following URL ```http://path/to/nextcloud/index.php/settings/user/externalstorages``` _(Replace http://path/to/nextcloud/index.php with you valid Nextcloud installation path)_
 - Click **Register** to create your app.
 
 ##### Add client secret
-- Under the section **Certificates and secrets** add new client secret, Name, choose expires:never. Make sure to copy the created key (you no longer do that later on) .paste the key in Nextcloud
+- Under the section **Certificates and secrets** add new client secret, Name, choose expires:never.  
+Make sure to copy the created key (you will not be able to do that later on). Key needs to be pasted in Nextcloud in last step
 
 ##### Add permissions to app
 - Under the section **API permissions**
