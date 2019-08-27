@@ -18,20 +18,24 @@ composer install
 ## Configuring OAuth2
 Connecting OneDrive is a little more work because you have to create a onedrive app. 
 - Log into the https://portal.azure.com/ page and search App Registration
-#####Create new app
+
+####Create new app
 - Click New registration 
 - Name Your App
 - Make sure to select "Accounts in any organizational directory (Any Azure AD directory - Multitenant) and personal Microsoft accounts (e.g. Skype, Xbox)"
 - For **Redirect URL (optional)** add the following URL ```http://path/to/nextcloud/index.php/settings/user/externalstorages``` _(Replace http://path/to/nextcloud/index.php with you valid Nextcloud installation path)_
 - Click **Register** to create your app.
-#####Add client secret
+
+####Add client secret
 - Under the section **Certificates and secrets** add new client secret, Name, choose expires:never. Make sure to copy the created key (you no longer do that later on) .paste the key in Nextcloud
-#####Add permissions to app
+
+####Add permissions to app
 - Under the section **API permissions**
 - Click add a permissions 
 - Choose  Microsoft Graph, Delegated permissions
-- add auth for [ User.Read | Files.ReadWrite.All | offline_access ] (the last is necessary to perform a correct token refresh) 
-#####On Nextcloud
+- add auth for [ User.Read | Files.ReadWrite.All | offline_access ] (the last is necessary to perform a correct token refresh)
+
+####On Nextcloud
 - Copy Client Id and client secret then Go to Nextcloud ```/settings/user/externalstorages``` and Add a new storage **OneDrive**
 - Fill the details Client Id, Client Secrets from you onedrive App page
 - Click Grant Access and then you will be redirected for OAuth login
