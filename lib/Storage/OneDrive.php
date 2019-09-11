@@ -32,7 +32,7 @@ use Microsoft\Graph\Graph;
 use League\Flysystem\Cached\CachedAdapter;
 use League\Flysystem\Cached\Storage\Memory as MemoryStore;
 
-class OneDrive extends \OC\Files\Storage\Flysystem
+class OneDrive extends CacheableFlysystemAdapter
 {
 
 	const APP_NAME = 'files_external_onedrive';
@@ -56,12 +56,16 @@ class OneDrive extends \OC\Files\Storage\Flysystem
 	 * @var Client
 	 */
 	private $client;
+
 	private $id;
 	private $options;
 	protected $adapter;
 	protected $logger;
+	protected $flysystem;
 
-	private static $tempFiles = [];
+	//private static $tempFiles = [];
+
+	protected $cacheFilemtime = [];
 
 	/**
 	 * Initialize the storage backend with a flysytem adapter
@@ -130,16 +134,31 @@ class OneDrive extends \OC\Files\Storage\Flysystem
 		return true;
 	}
 
-	/**
-	 * {@inheritdoc}
-	 */
 	public function filemtime($path)
 	{
 		if ($this->is_dir($path)) {
-			return $this->adapter->getTimestamp($path);
+			if ($path === '.' || $path === '') {
+				$path = "/";
+			}
+
+			if ($this->cacheFilemtime && isset($this->cacheFilemtime[$path])) {
+				return $this->cacheFilemtime[$path];
+			}
+
+			$arr = [];
+			$contents = $this->flysystem->listContents($path, true);
+			foreach ($contents as $c) {
+				$arr[] = isset($c['timestamp']) ? $c['timestamp'] : 0;
+			}
+			$mtime = $this->getLargest($arr);
 		} else {
-			return parent::filemtime($path);
+			if ($this->cacheFilemtime && isset($this->cacheFilemtime[$path])) {
+				return $this->cacheFilemtime[$path];
+			}
+			$mtime = parent::filemtime($path);
 		}
+		$this->cacheFilemtime[$path] = $mtime;
+		return $mtime;
 	}
 
 	public function file_exists($path)
@@ -152,11 +171,11 @@ class OneDrive extends \OC\Files\Storage\Flysystem
 
 	protected function getLargest($arr, $default = 0)
 	{
-		if (\count($arr) === 0) {
+		if (count($arr) === 0) {
 			return $default;
 		}
-		\arsort($arr);
-		return \array_values($arr)[0];
+		arsort($arr);
+		return array_values($arr)[0];
 	}
 
 	public function refreshToken()
