@@ -84,42 +84,52 @@ class OneDrive extends CacheableFlysystemAdapter
 
 	public function __construct($params)
 	{
-		if (isset($params['client_id']) && isset($params['client_secret']) && isset($params['token']) && isset($params['configured']) && $params['configured'] === 'true') {
-			$this->clientId = $params['client_id'];
-			$this->clientSecret = $params['client_secret'];
-			$app = new \OCP\AppFramework\App(self::APP_NAME);
-			$container = $app->getContainer();
-			$this->server = $container->getServer();
+		$app = new \OCP\AppFramework\App(self::APP_NAME);
+		$container = $app->getContainer();
+		$this->server = $container->getServer();
+		$user = $this->server->getUserSession()->getUser();
 
-			$this->token = json_decode(gzinflate(base64_decode($params['token'])));
-
-			if ($this->token !== null) {
-				$now = time() + 300;
-				if ($this->token->expires <= $now) {
-					$this->token = json_decode(gzinflate(base64_decode($this->refreshToken($this->token))));
-				}
-			}
-
-			$this->accessToken = $this->token->access_token;
-
-			$this->client = new Graph();
-			$this->client->setAccessToken($this->accessToken);
-
-			$this->root = isset($params['root']) ? $params['root'] : '/';
-
-			$this->id = 'onedrive::' . $this->clientId . '::' . $this->token->code_uid;
-
-			$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
-
-			$cacheStore = new MemoryStore();
-			$this->adapter = new CachedAdapter($adapter, $cacheStore);
-
-			$this->buildFlySystem($this->adapter);
-			$this->logger = \OC::$server->getLogger();
-		} else if (isset($params['configured']) && $params['configured'] === 'false') {
-			throw new \Exception('OneDrive storage not yet configured');
+		if ($user == null) {
+			throw new \Exception('OneDrive user storage not defined');
 		} else {
-			throw new \Exception('Creating OneDrive storage failed');
+
+			if (isset($params['client_id']) && isset($params['client_secret']) && isset($params['token']) && isset($params['configured']) && $params['configured'] === 'true') {
+				$this->clientId = $params['client_id'];
+				$this->clientSecret = $params['client_secret'];
+				
+				
+
+				$this->token = json_decode(gzinflate(base64_decode($params['token'])));
+
+				if ($this->token !== null) {
+					$now = time() + 300;
+					if ($this->token->expires <= $now) {
+						$this->token = json_decode(gzinflate(base64_decode($this->refreshToken($this->token))));
+					}
+				}
+
+				$this->accessToken = $this->token->access_token;
+
+				$this->client = new Graph();
+				$this->client->setAccessToken($this->accessToken);
+
+				$this->root = isset($params['root']) ? $params['root'] : '/';
+
+				$this->id = 'onedrive::' . $this->clientId . '::' . $this->token->code_uid;
+
+				$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
+
+				$cacheStore = new MemoryStore();
+				$this->adapter = new CachedAdapter($adapter, $cacheStore);
+
+				$this->buildFlySystem($this->adapter);
+				$this->logger = \OC::$server->getLogger();
+			} else if (isset($params['configured']) && $params['configured'] === 'false') {
+				throw new \Exception('OneDrive storage not yet configured');
+			} else {
+				throw new \Exception('Creating OneDrive storage failed');
+			}
+			
 		}
 	}
 
@@ -180,7 +190,6 @@ class OneDrive extends CacheableFlysystemAdapter
 
 	public function refreshToken()
 	{
-
 		$provider = new \League\OAuth2\Client\Provider\GenericProvider([
 			'clientId'          => $this->clientId,
 			'clientSecret'      => $this->clientSecret,
@@ -201,9 +210,13 @@ class OneDrive extends CacheableFlysystemAdapter
 
 		$newToken = base64_encode(gzdeflate(json_encode($newToken), 9));
 
+		$DBConfigService = $this->server->query('OCA\\Files_External\\Service\\DBConfigService');
+
 		$user = $this->server->getUserSession()->getUser();
 
-		$DBConfigService = $this->server->query('OCA\\Files_External\\Service\\DBConfigService');
+		if ($user == null) {
+			throw new \Exception('OneDrive storage user could not be null');
+		}
 
 		$mountId = null;
 		$mounts = $DBConfigService->getUserMountsFor(3, $user->getUID());
