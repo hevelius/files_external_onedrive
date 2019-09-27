@@ -62,9 +62,6 @@ class OneDrive extends CacheableFlysystemAdapter
 	protected $adapter;
 	protected $logger;
 	protected $flysystem;
-
-	//private static $tempFiles = [];
-
 	protected $cacheFilemtime = [];
 
 	/**
