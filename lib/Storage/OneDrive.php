@@ -94,8 +94,6 @@ class OneDrive extends CacheableFlysystemAdapter
 				$this->clientId = $params['client_id'];
 				$this->clientSecret = $params['client_secret'];
 				
-				
-
 				$this->token = json_decode(gzinflate(base64_decode($params['token'])));
 
 				if ($this->token !== null) {
@@ -111,11 +109,9 @@ class OneDrive extends CacheableFlysystemAdapter
 				$this->client->setAccessToken($this->accessToken);
 
 				$this->root = isset($params['root']) ? $params['root'] : '/';
-
-				$this->id = 'onedrive::' . $this->clientId . '::' . $this->token->code_uid;
+				$this->id = 'onedrive::' . $this->clientId . '::' . $user->getUID();
 
 				$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
-
 				$cacheStore = new MemoryStore();
 				$this->adapter = new CachedAdapter($adapter, $cacheStore);
 
@@ -194,16 +190,12 @@ class OneDrive extends CacheableFlysystemAdapter
 			'urlAuthorize'            => "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 			'urlAccessToken'          => "https://login.microsoftonline.com/common/oauth2/v2.0/token",
 			'urlResourceOwnerDetails' => '',
-			'scopes'					  => 'Files.Read Files.Read.All Files.ReadWrite Files.ReadWrite.All User.Read Sites.ReadWrite.All offline_access'
+			'scopes'	=> 'Files.Read Files.Read.All Files.ReadWrite Files.ReadWrite.All User.Read Sites.ReadWrite.All offline_access'
 		]);
 
 		$newToken = $provider->getAccessToken('refresh_token', [
 			'refresh_token' => $this->token->refresh_token
 		]);
-
-		$newToken = json_encode($newToken);
-		$newToken = json_decode($newToken, true);
-		$newToken['code_uid'] = $this->token->code_uid;
 
 		$newToken = base64_encode(gzdeflate(json_encode($newToken), 9));
 
