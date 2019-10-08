@@ -94,6 +94,8 @@ class OneDrive extends CacheableFlysystemAdapter
 				$this->clientId = $params['client_id'];
 				$this->clientSecret = $params['client_secret'];
 				
+				$this->id = 'onedrive::' . $this->clientId . '::' . $user->getUID();
+
 				$this->token = json_decode(gzinflate(base64_decode($params['token'])));
 
 				if ($this->token !== null) {
@@ -109,7 +111,6 @@ class OneDrive extends CacheableFlysystemAdapter
 				$this->client->setAccessToken($this->accessToken);
 
 				$this->root = isset($params['root']) ? $params['root'] : '/';
-				$this->id = 'onedrive::' . $this->clientId . '::' . $user->getUID();
 
 				$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
 				$cacheStore = new MemoryStore();
@@ -211,7 +212,9 @@ class OneDrive extends CacheableFlysystemAdapter
 		$mounts = $DBConfigService->getUserMountsFor(3, $user->getUID());
 
 		foreach ($mounts as $mount) {
-			if ($mount['config']['client_id'] == $this->clientId) {
+			if ($mount['config']['client_id'] == $this->clientId &&
+				$mount['storage_backend'] == 'files_external_onedrive' &&
+				$mount['applicable'][0]['value'] == $user->getUID()) {
 				$mountId = $mount['mount_id'];
 				break;
 			}
@@ -221,7 +224,9 @@ class OneDrive extends CacheableFlysystemAdapter
 			$mounts = $DBConfigService->getAdminMountsFor(3, $user->getUID());
 
 			foreach ($mounts as $mount) {
-				if ($mount['config']['client_id'] == $this->clientId) {
+					if ($mount['config']['client_id'] == $this->clientId &&
+					$mount['storage_backend'] == 'files_external_onedrive' &&
+					$mount['applicable'][0]['value'] == $user->getUID()) {
 					$mountId = $mount['mount_id'];
 					break;
 				}
