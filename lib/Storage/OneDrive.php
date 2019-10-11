@@ -84,21 +84,25 @@ class OneDrive extends CacheableFlysystemAdapter
 		$app = new \OCP\AppFramework\App(self::APP_NAME);
 		$container = $app->getContainer();
 		$this->server = $container->getServer();
-		$user = $this->server->getUserSession()->getUser();
-
-		if ($user == null) {
-			throw new \Exception('OneDrive user storage not defined');
-		} else {
 
 			if (isset($params['client_id']) && isset($params['client_secret']) && isset($params['token']) && isset($params['configured']) && $params['configured'] === 'true') {
 				$this->clientId = $params['client_id'];
 				$this->clientSecret = $params['client_secret'];
 				
-				$this->id = 'onedrive::' . $this->clientId . '::' . $user->getUID();
+				$this->root=isset($params['root'])?$params['root']:'/';
+				if ( ! $this->root || $this->root[0]!=='/') {
+					$this->root='/'.$this->root;
+				}
+				if (substr($this->root, -1) !== '/') {
+					$this->root .= '/';
+				}
+
+				//$this->id = 'onedrive::' . $this->clientId . '::' . $user->getUID() . $this->root;
 
 				$this->token = json_decode(gzinflate(base64_decode($params['token'])));
+				$this->id = 'onedrive::' . substr($this->clientId, 0, 8) . substr($this->token->access_token, 0 ,8);
 
-				if ($this->token !== null) {
+				if ($this->token !== null && $this->server->getUserSession()->getUser() != null) {
 					$now = time() + 300;
 					if ($this->token->expires <= $now) {
 						$this->token = json_decode(gzinflate(base64_decode($this->refreshToken($this->token))));
@@ -109,8 +113,6 @@ class OneDrive extends CacheableFlysystemAdapter
 
 				$this->client = new Graph();
 				$this->client->setAccessToken($this->accessToken);
-
-				$this->root = isset($params['root']) ? $params['root'] : '/';
 
 				$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
 				$cacheStore = new MemoryStore();
@@ -124,7 +126,6 @@ class OneDrive extends CacheableFlysystemAdapter
 				throw new \Exception('Creating OneDrive storage failed');
 			}
 			
-		}
 	}
 
 	public function getId()
