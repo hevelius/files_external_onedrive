@@ -24,10 +24,10 @@
 
 namespace OCA\Files_external_onedrive\Storage;
 
-use Icewind\Streams\IteratorDirectory;
+/*use Icewind\Streams\IteratorDirectory;
 use Icewind\Streams\RetryWrapper;
 use OCP\Files\Storage\FlysystemStorageAdapter;
-use GuzzleHttp\Client as GuzzleHttpClient;
+use GuzzleHttp\Client as GuzzleHttpClient;*/
 use Microsoft\Graph\Graph;
 use League\Flysystem\Cached\CachedAdapter;
 use League\Flysystem\Cached\Storage\Memory as MemoryStore;
@@ -57,11 +57,24 @@ class OneDrive extends CacheableFlysystemAdapter
 	 */
 	private $client;
 
+	/**
+	 * @var string
+	 */
 	private $id;
-	private $options;
+
+	/**
+	 * @var CacheableFlysystemAdapter
+	 */
 	protected $adapter;
+
+	/**
+	 * @var ILogger
+	 */
 	protected $logger;
-	protected $flysystem;
+
+	/**
+	 * @var int
+	 */
 	protected $cacheFilemtime = [];
 
 	/**
@@ -81,51 +94,31 @@ class OneDrive extends CacheableFlysystemAdapter
 
 	public function __construct($params)
 	{
-		$app = new \OCP\AppFramework\App(self::APP_NAME);
-		$container = $app->getContainer();
-		$this->server = $container->getServer();
+		if (isset($params['client_id']) && isset($params['client_secret']) && isset($params['token']) && isset($params['configured']) && $params['configured'] === 'true') {
+			$this->clientId = $params['client_id'];
+			$this->clientSecret = $params['client_secret'];
 
-			if (isset($params['client_id']) && isset($params['client_secret']) && isset($params['token']) && isset($params['configured']) && $params['configured'] === 'true') {
-				$this->clientId = $params['client_id'];
-				$this->clientSecret = $params['client_secret'];
-				
-				$this->root=isset($params['root'])?$params['root']:'/';
-				if ( ! $this->root || $this->root[0]!=='/') {
-					$this->root='/'.$this->root;
-				}
-				if (substr($this->root, -1) !== '/') {
-					$this->root .= '/';
-				}
+			$this->root = isset($params['root']) ? $params['root'] : '/';
 
-				//$this->id = 'onedrive::' . $this->clientId . '::' . $user->getUID() . $this->root;
+			$this->token = json_decode(gzinflate(base64_decode($params['token'])));
 
-				$this->token = json_decode(gzinflate(base64_decode($params['token'])));
-				$this->id = 'onedrive::' . substr($this->clientId, 0, 8) . substr($this->token->access_token, 0 ,8);
+			$this->accessToken = $this->token->access_token;
+			$this->id = 'onedrive::' . substr($this->clientId, 0, 8) . substr($this->clientSecret, 0, 8);
 
-				if ($this->token !== null && $this->server->getUserSession()->getUser() != null) {
-					$now = time() + 300;
-					if ($this->token->expires <= $now) {
-						$this->token = json_decode(gzinflate(base64_decode($this->refreshToken($this->token))));
-					}
-				}
+			$this->client = new Graph();
+			$this->client->setAccessToken($this->accessToken);
 
-				$this->accessToken = $this->token->access_token;
+			$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
+			$cacheStore = new MemoryStore();
+			$this->adapter = new CachedAdapter($adapter, $cacheStore);
 
-				$this->client = new Graph();
-				$this->client->setAccessToken($this->accessToken);
-
-				$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
-				$cacheStore = new MemoryStore();
-				$this->adapter = new CachedAdapter($adapter, $cacheStore);
-
-				$this->buildFlySystem($this->adapter);
-				$this->logger = \OC::$server->getLogger();
-			} else if (isset($params['configured']) && $params['configured'] === 'false') {
-				throw new \Exception('OneDrive storage not yet configured');
-			} else {
-				throw new \Exception('Creating OneDrive storage failed');
-			}
-			
+			$this->buildFlySystem($this->adapter);
+			$this->logger = \OC::$server->getLogger();
+		} else if (isset($params['configured']) && $params['configured'] === 'false') {
+			throw new \Exception('OneDrive storage not yet configured');
+		} else {
+			throw new \Exception('Creating OneDrive storage failed');
+		}
 	}
 
 	public function getId()
@@ -136,34 +129,16 @@ class OneDrive extends CacheableFlysystemAdapter
 	public function test()
 	{
 		// TODO: add test Storage
-		return true;
+		return !$this->isTokenExpired();
 	}
 
 	public function filemtime($path)
 	{
 		if ($this->is_dir($path)) {
-			if ($path === '.' || $path === '') {
-				$path = "/";
-			}
-
-			if ($this->cacheFilemtime && isset($this->cacheFilemtime[$path])) {
-				return $this->cacheFilemtime[$path];
-			}
-
-			$arr = [];
-			$contents = $this->flysystem->listContents($path, true);
-			foreach ($contents as $c) {
-				$arr[] = isset($c['timestamp']) ? $c['timestamp'] : 0;
-			}
-			$mtime = $this->getLargest($arr);
+			return $this->adapter->getTimestamp($path);
 		} else {
-			if ($this->cacheFilemtime && isset($this->cacheFilemtime[$path])) {
-				return $this->cacheFilemtime[$path];
-			}
-			$mtime = parent::filemtime($path);
+			return parent::filemtime($path);
 		}
-		$this->cacheFilemtime[$path] = $mtime;
-		return $mtime;
 	}
 
 	public function file_exists($path)
@@ -183,11 +158,24 @@ class OneDrive extends CacheableFlysystemAdapter
 		return array_values($arr)[0];
 	}
 
-	public function refreshToken()
+	public function isTokenExpired()
 	{
+		if ($this->token !== null) {
+			$now = time() + 900;
+			if ($this->token->expires <= $now) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public function refreshToken($clientId, $clientSecret, $token)
+	{
+		$token = json_decode(gzinflate(base64_decode($token)));
 		$provider = new \League\OAuth2\Client\Provider\GenericProvider([
-			'clientId'          => $this->clientId,
-			'clientSecret'      => $this->clientSecret,
+			'clientId'          => $clientId,
+			'clientSecret'      => $clientSecret,
 			'redirectUri'       => '',
 			'urlAuthorize'            => "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
 			'urlAccessToken'          => "https://login.microsoftonline.com/common/oauth2/v2.0/token",
@@ -196,51 +184,10 @@ class OneDrive extends CacheableFlysystemAdapter
 		]);
 
 		$newToken = $provider->getAccessToken('refresh_token', [
-			'refresh_token' => $this->token->refresh_token
+			'refresh_token' => $token->refresh_token
 		]);
 
 		$newToken = base64_encode(gzdeflate(json_encode($newToken), 9));
-
-		$DBConfigService = $this->server->query('OCA\\Files_External\\Service\\DBConfigService');
-
-		$user = $this->server->getUserSession()->getUser();
-
-		if ($user == null) {
-			throw new \Exception('OneDrive storage user could not be null');
-		}
-
-		$mountId = null;
-		$mounts = $DBConfigService->getUserMountsFor(3, $user->getUID());
-
-		foreach ($mounts as $mount) {
-			if ($mount['config']['client_id'] == $this->clientId &&
-				$mount['storage_backend'] == 'files_external_onedrive' &&
-				$mount['applicable'][0]['value'] == $user->getUID()) {
-				$mountId = $mount['mount_id'];
-				break;
-			}
-		}
-
-		if ($mountId == null) {
-			$mounts = $DBConfigService->getAdminMountsFor(3, $user->getUID());
-
-			foreach ($mounts as $mount) {
-					if ($mount['config']['client_id'] == $this->clientId &&
-					$mount['storage_backend'] == 'files_external_onedrive' &&
-					$mount['applicable'][0]['value'] == $user->getUID()) {
-					$mountId = $mount['mount_id'];
-					break;
-				}
-			}
-		}
-
-		if ($mountId == null) {
-			throw new \Exception('OneDrive storage not yet configured');
-		}
-
-		$key = "token";
-
-		$DBConfigService->setConfig($mountId, $key, $newToken);
 
 		return $newToken;
 	}
