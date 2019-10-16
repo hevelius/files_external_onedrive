@@ -49,7 +49,7 @@ References:
 
 ## Latest features added
 * added a Cachable Flysystem Adapter
-* a logic to refresh token (maybe it's not an elegat way to do this). After new token came back it's saved directly in Files_external config table)
+* a logic to refresh token as background jobs [executed by cron refresh the token that will expire within the next 15 minutes]
 * upload large files (over graph limit of 4MB per request) [using uploadSession]
 
 ## ToDo
