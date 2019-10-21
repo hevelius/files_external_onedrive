@@ -108,7 +108,7 @@ class OneDrive extends CacheableFlysystemAdapter
 			$this->client = new Graph();
 			$this->client->setAccessToken($this->accessToken);
 
-			$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
+			$adapter = new Adapter($this->client, 'root', '/drive/', true);
 			$cacheStore = new MemoryStore();
 			$this->adapter = new CachedAdapter($adapter, $cacheStore);
 
