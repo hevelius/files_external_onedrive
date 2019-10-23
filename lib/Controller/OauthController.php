@@ -146,6 +146,10 @@ class OauthController extends Controller
 							);
 						}
 
+						$token = json_encode($token);
+						$token = json_decode($token, true);
+						$token['code_uid'] = uniqid();
+						
 						return new DataResponse(
 							[
 								'status' => 'success',

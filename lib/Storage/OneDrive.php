@@ -103,12 +103,13 @@ class OneDrive extends CacheableFlysystemAdapter
 			$this->token = json_decode(gzinflate(base64_decode($params['token'])));
 
 			$this->accessToken = $this->token->access_token;
-			$this->id = 'onedrive::' . substr($this->clientId, 0, 8) . substr($this->clientSecret, 0, 8);
+			$this->id = 'onedrive::' . substr($this->clientId, 0, 8) . '::' . $this->token->code_uid;
+			//$this->id = 'onedrive::' . substr($this->clientId, 0, 8) . substr($this->clientSecret, 0, 8);
 
 			$this->client = new Graph();
 			$this->client->setAccessToken($this->accessToken);
 
-			$adapter = new Adapter($this->client, 'root', '/drive/', true);
+			$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
 			$cacheStore = new MemoryStore();
 			$this->adapter = new CachedAdapter($adapter, $cacheStore);
 
@@ -186,6 +187,10 @@ class OneDrive extends CacheableFlysystemAdapter
 		$newToken = $provider->getAccessToken('refresh_token', [
 			'refresh_token' => $token->refresh_token
 		]);
+
+		$newToken = json_encode($newToken);
+		$newToken = json_decode($newToken, true);
+		$newToken['code_uid'] = $token->code_uid;
 
 		$newToken = base64_encode(gzdeflate(json_encode($newToken), 9));
 
