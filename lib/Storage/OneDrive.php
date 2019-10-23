@@ -104,7 +104,6 @@ class OneDrive extends CacheableFlysystemAdapter
 
 			$this->accessToken = $this->token->access_token;
 			$this->id = 'onedrive::' . substr($this->clientId, 0, 8) . '::' . $this->token->code_uid;
-			//$this->id = 'onedrive::' . substr($this->clientId, 0, 8) . substr($this->clientSecret, 0, 8);
 
 			$this->client = new Graph();
 			$this->client->setAccessToken($this->accessToken);
