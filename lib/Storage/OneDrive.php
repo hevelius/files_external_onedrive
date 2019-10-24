@@ -24,10 +24,6 @@
 
 namespace OCA\Files_external_onedrive\Storage;
 
-/*use Icewind\Streams\IteratorDirectory;
-use Icewind\Streams\RetryWrapper;
-use OCP\Files\Storage\FlysystemStorageAdapter;
-use GuzzleHttp\Client as GuzzleHttpClient;*/
 use Microsoft\Graph\Graph;
 use League\Flysystem\Cached\CachedAdapter;
 use League\Flysystem\Cached\Storage\Memory as MemoryStore;
