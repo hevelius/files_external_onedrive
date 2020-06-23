@@ -36,8 +36,6 @@ $(document).ready(function () {
 						&& typeof client_secret === "string"
 						&& client_secret !== ''
 					) {
-						console.log("step 2");
-						console.log(location.protocol + '//' + location.host + location.pathname);
 						$('.configuration').trigger('oauth_step2', [{
 							backend_id: $tr.attr('class'),
 							client_id: client_id,
@@ -82,7 +80,6 @@ $(document).ready(function () {
 			console.log("trigger is not for this OAuth2");
 			return false;		// means the trigger is not for this OAuth2 grant
 		}
-		console.log(data);
 		OCA.Files_External.Settings.OAuth2.verifyCode(backendUrl, data)
 			.fail(function (message) {
 				console.log("Fail with message: "+message);
@@ -177,7 +174,6 @@ OCA.Files_External.Settings.OAuth2.verifyCode = function (backendUrl, data) {
 					deferredObject.resolve(status);
 				});
 			} else {
-			console.log("Verify Code:"+result);
 				deferredObject.reject(result.data);
 			}
 		}
