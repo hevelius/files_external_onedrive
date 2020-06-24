@@ -31,7 +31,7 @@ class RefreshToken extends TimedJob {
 	private $appName = 'files_external_onedrive';
 
 	public function __construct() {
-		$this->setInterval(60);
+		$this->setInterval(1);
 	}
 
 	/**
