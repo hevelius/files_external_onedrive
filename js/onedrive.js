@@ -7,7 +7,8 @@ $(document).ready(function () {
 	}
 
 	OCA.Files_External.Settings.mountConfig.whenSelectAuthMechanism(function ($tr, authMechanism, scheme, onCompletion) {
-		if (authMechanism === 'oauth2::oauth2') {
+		if (authMechanism === 'oauth2::oauth2' &&
+			$tr.hasClass('files_external_onedrive')) {
 			var config = $tr.find('.configuration');
 			// hack to prevent conflict with oauth2 code from files_external
 			// wait for files_external to setup the config ui and then change the button
@@ -38,7 +39,7 @@ $(document).ready(function () {
 					) {
 						console.log("step 2");
 						console.log(location.protocol + '//' + location.host + location.pathname);
-						$('.configuration').trigger('oauth_step2', [{
+						$('.configuration').trigger('onedrive_oauth_step2', [{
 							backend_id: $tr.attr('class'),
 							client_id: client_id,
 							client_secret: client_secret,
@@ -59,7 +60,7 @@ $(document).ready(function () {
 		var client_id = $(this).parent().find('[data-parameter="client_id"]').val().trim();
 		var client_secret = $(this).parent().find('[data-parameter="client_secret"]').val().trim();
 		if (client_id !== '' && client_secret !== '') {
-			$('.configuration').trigger('oauth_step1', [{
+			$('.configuration').trigger('onedrive_oauth_step1', [{
 				backend_id: tr.attr('class'),
 				client_id: client_id,
 				client_secret: client_secret,
@@ -69,21 +70,21 @@ $(document).ready(function () {
 		}
 	});
 
-	$('.configuration').on('oauth_step1', function (event, data) {
+	$('.configuration').on('onedrive_oauth_step1', function (event, data) {
 		if (data['backend_id'] !== backendId) {
 			return false;	// means the trigger is not for this storage adapter
 		}
 
-		OCA.Files_External.Settings.OAuth2.getAuthUrl(backendUrl, data);
+		OCA.Files_External.Settings.OAuth2.getOnedriveAuthUrl(backendUrl, data);
 	});
 
-	$('.configuration').on('oauth_step2', function (event, data) {
+	$('.configuration').on('onedrive_oauth_step2', function (event, data) {
 		if (data['backend_id'] !== backendId || data['code'] === undefined) {
 			console.log("trigger is not for this OAuth2");
 			return false;		// means the trigger is not for this OAuth2 grant
 		}
 		console.log(data);
-		OCA.Files_External.Settings.OAuth2.verifyCode(backendUrl, data)
+		OCA.Files_External.Settings.OAuth2.onedriveVerifyCode(backendUrl, data)
 			.fail(function (message) {
 				console.log("Fail with message: "+message);
 				OC.dialogs.alert(message,
@@ -107,7 +108,7 @@ OCA.Files_External.Settings.OAuth2 = OCA.Files_External.Settings.OAuth2 || {};
  * @param  {String}   backendUrl The backend URL to which request will be sent
  * @param  {Object}   data       Keys -> (backend_id, client_id, client_secret, redirect, tr)
  */
-OCA.Files_External.Settings.OAuth2.getAuthUrl = function (backendUrl, data) {
+OCA.Files_External.Settings.OAuth2.getOnedriveAuthUrl = function (backendUrl, data) {
 	var $tr = data['tr'];
 	var configured = $tr.find('[data-parameter="configured"]');
 	var token = $tr.find('.configuration [data-parameter="token"]');
@@ -149,7 +150,7 @@ OCA.Files_External.Settings.OAuth2.getAuthUrl = function (backendUrl, data) {
  * @param  {Object}   data       Keys -> (backend_id, client_id, client_secret, redirect, tr, code)
  * @return {Promise} jQuery Deferred Promise object
  */
-OCA.Files_External.Settings.OAuth2.verifyCode = function (backendUrl, data) {
+OCA.Files_External.Settings.OAuth2.onedriveVerifyCode = function (backendUrl, data) {
 	var $tr = data['tr'];
 	var configured = $tr.find('[data-parameter="configured"]');
 	var token = $tr.find('.configuration [data-parameter="token"]');
