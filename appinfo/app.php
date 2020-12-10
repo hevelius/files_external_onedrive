@@ -21,6 +21,8 @@
  *
  */
 
+declare(strict_types=1);
+
 if ((@include_once(dirname(__DIR__).'/vendor/autoload.php')) === false) {
     throw new \Exception('Cannot include autoload. Did you install dependencies using composer?');
 }

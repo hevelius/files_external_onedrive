@@ -22,11 +22,15 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace OCA\Files_external_onedrive\AppInfo;
 
 use OCP\AppFramework\App;
+use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCA\Files_External\Lib\Config\IBackendProvider;
 use OCA\Files_External\Service\BackendService;
+use OCA\Files_external_onedrive\Backend\OneDrive;
 
 /**
  * @package OCA\Files_external_onedrive\AppInfo
@@ -34,7 +38,7 @@ use OCA\Files_External\Service\BackendService;
 class Application extends App implements IBackendProvider
 {
 
-    public function __construct(array $urlParams = [])
+    public function __construct(array $urlParams = array())
     {
         parent::__construct('files_external_onedrive', $urlParams);
     }
@@ -45,17 +49,23 @@ class Application extends App implements IBackendProvider
     public function getBackends()
     {
         $container = $this->getContainer();
-        $backends = [
-            $container->query('OCA\Files_external_onedrive\Backend\OneDrive'),
-        ];
-        return $backends;
+        return [
+			$container->query(OneDrive::class)
+		];
     }
 
     public function register()
     {
         $container = $this->getContainer();
         $server = $container->getServer();
-        $backendService = $server->query('OCA\\Files_External\\Service\\BackendService');
-        $backendService->registerBackendProvider($this);
+
+        \OC::$server->getEventDispatcher()->addListener(
+			'OCA\\Files_External::loadAdditionalBackends',
+			function() use ($server) {
+				$backendService = $server->query(BackendService::class);
+				$backendService->registerBackendProvider($this);
+			}
+        );
+        
     }
 }
