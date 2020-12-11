@@ -122,7 +122,7 @@ class OauthController extends Controller
 							[
 								'status' => 'error',
 								'data' => [
-									'message' => $l->t('Step 1 failed. Exception: %s', [$exception->getMessage()]),
+									'message' => $this->l10n->error('Step 1 failed. Exception: %s', array('extra_context' => $e->getMessage()))
 								]
 							],
 							Http::STATUS_UNPROCESSABLE_ENTITY
@@ -163,11 +163,22 @@ class OauthController extends Controller
 							[
 								'status' => 'error',
 								'data' => [
-									'message' => $l->t('Step 2 failed. Exception: %s', [$exception->getMessage()]),
+									'message' => $this->l10n->error('Step 2 failed. Exception: %s', array('extra_context' => $e->getMessage()))
 								]
 							],
 							Http::STATUS_UNPROCESSABLE_ENTITY
 						);
+					} catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
+						return new DataResponse(
+							[
+								'status' => 'error',
+								'data' => [
+									'message' => $this->l10n->error('Step 2 failed. Exception: %s', array('extra_context' => $e->getMessage()))
+								]
+							],
+							Http::STATUS_UNPROCESSABLE_ENTITY
+						);
+				
 					}
 				}
 			}

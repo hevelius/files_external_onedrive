@@ -25,8 +25,9 @@
 namespace OCA\Files_external_onedrive\Storage;
 
 use Microsoft\Graph\Graph;
-use League\Flysystem\Cached\CachedAdapter;
-use League\Flysystem\Cached\Storage\Memory as MemoryStore;
+//use League\Flysystem\Cached\CachedAdapter;
+//use League\Flysystem\Cached\Storage\Memory as MemoryStore;
+use OC\Files\Storage\Flysystem;
 
 class OneDrive extends CacheableFlysystemAdapter
 {
@@ -59,9 +60,14 @@ class OneDrive extends CacheableFlysystemAdapter
 	private $id;
 
 	/**
-	 * @var CacheableFlysystemAdapter
+	 * @var Adapter
 	 */
 	protected $adapter;
+
+	/**
+	 * @var Adapter
+	 */
+	protected $flysystem;
 
 	/**
 	 * @var ILogger
@@ -104,9 +110,7 @@ class OneDrive extends CacheableFlysystemAdapter
 			$this->client = new Graph();
 			$this->client->setAccessToken($this->accessToken);
 
-			$adapter = new Adapter($this->client, 'root', '/me/drive/', true);
-			$cacheStore = new MemoryStore();
-			$this->adapter = new CachedAdapter($adapter, $cacheStore);
+			$this->adapter = new Adapter($this->client, 'root', '/me/drive/', true);
 
 			$this->buildFlySystem($this->adapter);
 			$this->logger = \OC::$server->getLogger();
@@ -128,30 +132,52 @@ class OneDrive extends CacheableFlysystemAdapter
 		return !$this->isTokenExpired();
 	}
 
-	public function filemtime($path)
-	{
-		if ($this->is_dir($path)) {
-			return $this->adapter->getTimestamp($path);
-		} else {
-			return parent::filemtime($path);
-		}
-	}
-
-	public function file_exists($path)
-	{
+	public function file_exists($path) {
 		if ($path === '' || $path === '/' || $path === '.') {
 			return true;
 		}
 		return parent::file_exists($path);
 	}
 
-	protected function getLargest($arr, $default = 0)
-	{
-		if (count($arr) === 0) {
+	protected function getLargest($arr, $default = 0) {
+		if (\count($arr) === 0) {
 			return $default;
 		}
-		arsort($arr);
-		return array_values($arr)[0];
+		\arsort($arr);
+		return \array_values($arr)[0];
+	}
+
+	public function filemtime($path) {
+		if ($this->is_dir($path)) {
+			if ($path === '.' || $path === '') {
+				$path = "/";
+			}
+
+			if ($this->cacheFilemtime && isset($this->cacheFilemtime[$path])) {
+				return $this->cacheFilemtime[$path];
+			}
+
+			$arr = [];
+			$contents = $this->flysystem->listContents($path, true);
+			foreach ($contents as $c) {
+				$arr[] = $c['type'] === 'file' ? $c['timestamp'] : 0;
+			}
+			$mtime = $this->getLargest($arr);
+		} else {
+			if ($this->cacheFilemtime && isset($this->cacheFilemtime[$path])) {
+				return $this->cacheFilemtime[$path];
+			}
+			$mtime = parent::filemtime($path);
+		}
+		$this->cacheFilemtime[$path] = $mtime;
+		return $mtime;
+	}
+
+	public function stat($path) {
+		if ($path === '' || $path === '/' || $path === '.') {
+			return ['mtime' => 0];
+		}
+		return parent::stat($path);
 	}
 
 	public function isTokenExpired()
