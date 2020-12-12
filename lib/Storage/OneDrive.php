@@ -25,8 +25,6 @@
 namespace OCA\Files_external_onedrive\Storage;
 
 use Microsoft\Graph\Graph;
-//use League\Flysystem\Cached\CachedAdapter;
-//use League\Flysystem\Cached\Storage\Memory as MemoryStore;
 use OC\Files\Storage\Flysystem;
 
 class OneDrive extends CacheableFlysystemAdapter
@@ -128,7 +126,6 @@ class OneDrive extends CacheableFlysystemAdapter
 
 	public function test()
 	{
-		// TODO: add test Storage
 		return !$this->isTokenExpired();
 	}
 
