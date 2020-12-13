@@ -44,6 +44,6 @@
     },
 
     "scripts": {
-      "test": "vendor/bin/phpunit --bootstrap vendor/autoload.php tests/OneDrive"
+      "test": "vendor/bin/phpunit --bootstrap vendor/autoload.php tests"
     }
 }
