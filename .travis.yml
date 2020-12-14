@@ -8,7 +8,10 @@ env:
   global:
   - SERVER_BRANCH=master
   matrix:
-  - DB=sqlite
+  - DB=mysql
+
+addons:
+  mariadb: '10.0'
 
 branches:
   only:
