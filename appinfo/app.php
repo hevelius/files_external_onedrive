@@ -28,7 +28,7 @@ if ((@include_once(dirname(__DIR__).'/vendor/autoload.php')) === false) {
 }
 
 if (!\OC_App::isEnabled('files_external')) {
-	\OC_App::enable('files_external');
+	OC_App::enable('files_external');
 }
 
 $app = new \OCA\Files_external_onedrive\AppInfo\Application();
