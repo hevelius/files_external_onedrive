@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <phpunit bootstrap="bootstrap.php"
-		 strict="true"
-		 verbose="true"
 		 timeoutForSmallTests="900"
 		 timeoutForMediumTests="900"
 		 timeoutForLargeTests="900"
-		 stopOnFailure="true"
-		>
-	<testsuite name='ownCloud - file external onedrive App Tests'>
+>
+	<testsuite name='Nextcloud - Files External Onedrive App Tests'>
 		<directory suffix='.php'>.</directory>
 	</testsuite>
-	<!-- filters for code coverage -->
 	<filter>
 		<whitelist>
-			<directory suffix=".php">../../files_external_onedrive</directory>
+			<directory suffix=".php">../</directory>
 			<exclude>
-				<directory suffix=".php">../../files_external_onedrive/tests</directory>
+				<directory suffix=".php">../tests
+				</directory>
 			</exclude>
 		</whitelist>
 	</filter>
 	<logging>
-		<!-- and this is where your report will be written -->
 		<log type="coverage-clover" target="./clover.xml"/>
 	</logging>
 </phpunit>

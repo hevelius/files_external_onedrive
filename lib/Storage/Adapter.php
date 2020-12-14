@@ -1,9 +1,9 @@
 <?php
 
 /**
- * @author Samy NASTUZZI <samy@nastuzzi.fr>
+ * @author Mario Perrotta <mario.perrotta@unimi.it>
  *
- * @copyright Copyright (c) 2018, Samy NASTUZZI (samy@nastuzzi.fr).
+ * @copyright Copyright (c) 2018, Mario Perrotta <mario.perrotta@unimi.it>.
  * @license AGPL-3.0
  *
  * This code is free software: you can redistribute it and/or modify
@@ -26,8 +26,7 @@ use League\Flysystem\Config;
 use League\Flysystem\Util;
 
 class Adapter extends \MarioPerrotta\FlysystemOneDrive\OneDriveAdapter
-{
-
+{   
     /**
      * {@inheritdoc}
      */
@@ -41,6 +40,8 @@ class Adapter extends \MarioPerrotta\FlysystemOneDrive\OneDriveAdapter
      */
     public function getTimestamp($path)
     {
-        return $this->getMetadata($path);
+        $response = $this->getMetadata($path);
+        $timestamp = $response['timestamp'];
+        return $timestamp;
     }
 }

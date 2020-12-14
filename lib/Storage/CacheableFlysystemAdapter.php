@@ -26,6 +26,8 @@ namespace OCA\Files_external_onedrive\Storage;
 use Icewind\Streams\IteratorDirectory;
 use League\Flysystem\FileNotFoundException;
 use OC\Files\Storage\Flysystem;
+use League\Flysystem\AdapterInterface;
+use League\Flysystem\Plugin\GetWithMetadata;
 
 /**
  * Generic Cacheable adapter between flysystem adapters and owncloud's storage system
@@ -34,16 +36,27 @@ use OC\Files\Storage\Flysystem;
  */
 abstract class CacheableFlysystemAdapter extends Flysystem {
 	/**
-     * This property is used to check whether the storage is case insensitive or not
-     * @var boolean
-     */
-    protected $isCaseInsensitiveStorage = false;
+	 * This property is used to check whether the storage is case insensitive or not
+	 * @var boolean
+	 */
+	protected $isCaseInsensitiveStorage = false;
 
 	/**
 	 * Stores the results in cache for the current request to prevent multiple requests to the API
 	 * @var array
 	 */
 	protected $cacheContents = [];
+
+	/**
+	 * Initialize the storage backend with a flyssytem adapter
+	 * Override parent method so the flysystem include information about storage case sensitivity
+	 *
+	 * @param \League\Flysystem\AdapterInterface $adapter
+	 */
+	protected function buildFlySystem(AdapterInterface $adapter) {
+		$this->flysystem = new Filesystem($adapter, [Filesystem::IS_CASE_INSENSITIVE_STORAGE => $this->isCaseInsensitiveStorage]);
+		$this->flysystem->addPlugin(new GetWithMetadata());
+	}
 
 	public function clearCache() {
 		$this->cacheContents = [];
@@ -61,13 +74,8 @@ abstract class CacheableFlysystemAdapter extends Flysystem {
 		if ($location === '') {
 			$location = '/';
 		}
-		return $location;
-	}
-
-	public function buildPath($path, $modifyCase = false) {
-		$location = parent::buildPath($path);
-		if ($this->isCaseInsensitiveStorage && $modifyCase) {
-			$location = strtolower($location);
+		if ($this->isCaseInsensitiveStorage) {
+			$location = \strtolower($location);
 		}
 		return $location;
 	}
@@ -85,7 +93,7 @@ abstract class CacheableFlysystemAdapter extends Flysystem {
 				$this->cacheContents[$location] = $this->flysystem->getMetadata($location);
 			} catch (FileNotFoundException $e) {
 				// do not store this info in cache as it might interfere with Upload process
-                return false;
+				return false;
 			}
 		}
 		return $this->cacheContents[$location];
@@ -98,7 +106,7 @@ abstract class CacheableFlysystemAdapter extends Flysystem {
 	 */
 	public function updateCache($contents) {
 		foreach ($contents as $object) {
-			$path = $this->isCaseInsensitiveStorage ? strtolower($object['path']) : $object['path'];
+			$path = $object['path'];
 			$this->cacheContents[$path] = $object;
 		}
 	}
@@ -108,14 +116,13 @@ abstract class CacheableFlysystemAdapter extends Flysystem {
 	 */
 	public function opendir($path) {
 		try {
-			// we need to preserve case to ensure the parent folder check is correct
-			$location = $this->buildPath($path, false);
+			$location = $this->buildPath($path);
 			$content = $this->flysystem->listContents($location);
 			$this->updateCache($content);
 		} catch (FileNotFoundException $e) {
 			return false;
 		}
-		$names = array_map(function ($object) {
+		$names = \array_map(function ($object) {
 			return $object['basename'];
 		}, $content);
 		return IteratorDirectory::wrap($names);
@@ -145,7 +152,7 @@ abstract class CacheableFlysystemAdapter extends Flysystem {
 			return 0;
 		} else {
 			$info = $this->getFlysystemMetadata($path);
-			return $info['size'];
+			return (int) $info['size'];
 		}
 	}
 
@@ -154,7 +161,10 @@ abstract class CacheableFlysystemAdapter extends Flysystem {
 	 */
 	public function filemtime($path) {
 		$info = $this->getFlysystemMetadata($path);
-		return $info['timestamp'];
+		if ($info) {	// if $path exists
+			return $info['timestamp'];
+		}
+		return 0;
 	}
 
 	/**
@@ -162,10 +172,13 @@ abstract class CacheableFlysystemAdapter extends Flysystem {
 	 */
 	public function stat($path) {
 		$info = $this->getFlysystemMetadata($path);
-		return [
-			'mtime' => $info['timestamp'],
-			'size' => $info['size']
-		];
+		if ($info) {
+			return [
+				'mtime' => $info['timestamp'],
+				'size' => $info['size']
+			];
+		}
+		return false;
 	}
 
 	/**
@@ -176,6 +189,52 @@ abstract class CacheableFlysystemAdapter extends Flysystem {
 			return 'dir';
 		}
 		$info = $this->getFlysystemMetadata($path);
-		return $info['type'];
+		if ($info) {
+			return $info['type'];
+		}
+		return false;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function file_exists($path) {
+		$info = $this->getFlysystemMetadata($path);
+		return (bool) $info;
+	}
+
+	/**
+	 * Set the cacheContents for the given path to false instead of null
+	 * to prevent request to external storage
+	 *
+	 * Should be used when we know that the querying this path in the
+	 * adapter will return false (i.e path not exists in external storage)
+	 * @param  string $path Path to file/folder
+	 */
+	protected function removeStatCache($path) {
+		$location = $this->getCacheLocation($path);
+		$this->cacheContents[$location] = false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function rmdir($path) {
+		$success = parent::rmdir($path);
+		if ($success) {
+			$this->removeStatCache($path);
+		}
+		return $success;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function unlink($path) {
+		$success = parent::unlink($path);
+		if ($success) {
+			$this->removeStatCache($path);
+		}
+		return $success;
 	}
 }

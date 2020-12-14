@@ -1,8 +1,11 @@
 vendor/
 composer.lock
 composer.phar
+composer-setup.php
 coverage.xml
 .vscode
+.phpunit.result*
+launch.json
 
 # Mac OS X artifacts
 .DS_Store

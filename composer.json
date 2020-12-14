@@ -30,20 +30,20 @@
     
     "require": {
         "league/flysystem-cached-adapter": "*",
-	"hevelius/flysystem-onedrive": "*",
+	    "hevelius/flysystem-onedrive": "*",
         "league/oauth2-client": "*",
         "php":      ">= 5.4 || >= 7.0",
         "ext-curl": "*"
     },
 
     "require-dev": {
-      "phpunit/phpunit": "^6.0"
+      "phpunit/phpunit": "^8.0"
     },
 
     "autoload": {
     },
 
     "scripts": {
-      "test": "vendor/bin/phpunit --bootstrap vendor/autoload.php tests/OneDrive"
+      "test": "vendor/bin/phpunit --bootstrap vendor/autoload.php tests"
     }
 }

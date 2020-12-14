@@ -22,19 +22,21 @@
  *
  */
 
-namespace Test\Files_external_onedrive;
+namespace OCA\Files_external_onedrive\Tests\Storage;
 
-use Prophecy\Argument;
-//use Test\Files\Storage\Storage;
+use PHPUnit\Framework\TestCase;
 
-class OneDrive extends Storage
+class ApplicationTest extends TestCase
 {
-    private $config;
+    private $app;
 
-    protected function setUp()
+    protected function setUp():void
     {
-        $this->config = json_decode(file_get_contents('./config.json'), true);
-        $this->instance = new \OCA\Files_external_onedrive\Storage\OneDrive($this->config);
         parent::setUp();
+        $this->app = new \OCA\Files_external_onedrive\AppInfo\Application();
+    }
+
+    public function testGetBackends() {
+        $this->assertCount(1, $this->app->getBackends());
     }
 }

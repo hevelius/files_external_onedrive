@@ -5,19 +5,29 @@
     <summary>Integrate OneDrive as an external storage</summary>
     <description><![CDATA[The OneDrive Backend allows administrators and users to add their own OneDrive as folders in Nextcloud. This offers an easy way for users to access OneDrive data in the same place where they find their other files.
 Nextcloud accesses OneDrive through the Microsoft GRAPH API and uses Oauth2 authentication.]]></description>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
     <licence>agpl</licence>
     <author>Mario Perrotta</author>
     <namespace>Files_external_onedrive</namespace>
-    <category>tools</category>
     <types>
 	    <filesystem/>
     </types>
+    <category>files</category>
+    <category>tools</category>
     <website>https://github.com/hevelius/files_external_onedrive</website>
     <bugs>https://github.com/hevelius/files_external_onedrive/issues</bugs>
     <repository type="git">https://github.com/hevelius/files_external_onedrive.git</repository>
+    <screenshot>
+    	https://github.com/hevelius/files_external_onedrive/blob/master/screenshots/notepad-690335_1920.jpg
+    </screenshot>
+    <screenshot>
+    	https://github.com/hevelius/files_external_onedrive/blob/master/screenshots/screenshot_2019-07-05%2016-15-30.png
+    </screenshot>
+    <screenshot>
+    	https://github.com/hevelius/files_external_onedrive/blob/master/screenshots/screenshot_2019-07-05%2016-16-28.png
+    </screenshot>
     <dependencies>
-        <nextcloud min-version="15" max-version="16"/>
+        <nextcloud min-version="15.0" max-version="20.0"/>
     </dependencies>
     <background-jobs>
               <job>OCA\Files_external_onedrive\BackgroundJob\RefreshToken</job>
