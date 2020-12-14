@@ -44,6 +44,6 @@
     },
 
     "scripts": {
-      "test": "vendor/bin/phpunit --bootstrap vendor/autoload.php tests"
+      "test": "vendor/bin/phpunit --configuration tests/phpunit.xml --bootstrap vendor/autoload.php tests"
     }
 }
