@@ -1,6 +1,7 @@
 # files_external_onedrive
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 [![Build Status](https://travis-ci.org/hevelius/files_external_onedrive.svg?branch=master)](https://travis-ci.org/hevelius/files_external_onedrive)
+[![codecov](https://codecov.io/gh/hevelius/files_external_onedrive/branch/master/graph/badge.svg?token=AnnDxRQkSj)](https://codecov.io/gh/hevelius/files_external_onedrive)
 
 OneDrive backend for Nextcloud
 
