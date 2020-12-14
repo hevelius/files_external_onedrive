@@ -45,7 +45,7 @@ install:
   - php -f server/occ app:enable files_external_onedrive
 
 before_script:
-  # Switch bach to the app directory
+  # Switch back to the app directory
   - cd server/apps/files_external_onedrive
 
 script:
