@@ -47,9 +47,9 @@ install:
 before_script:
   # Switch back to the app directory
   - cd server/apps/files_external_onedrive
-  - mysql -u root -e "CREATE DATABASE nc_autotest;"
-  - mysql -u root -e "CREATE USER 'nc_autotest'@'localhost' IDENTIFIED BY 'nc_autotest';"
-  - mysql -u root -e "GRANT ALL ON nc_autotest.* TO 'nc_autotest'@'localhost';"
+  - sudo mysql -u root -e "CREATE DATABASE nc_autotest;"
+  - sudo mysql -u root -e "CREATE USER 'nc_autotest'@'localhost' IDENTIFIED BY 'nc_autotest';"
+  - sudo mysql -u root -e "GRANT ALL ON nc_autotest.* TO 'nc_autotest'@'localhost';"
 
 script:
   # Lint php files
