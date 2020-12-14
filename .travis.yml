@@ -57,3 +57,6 @@ script:
 
   # Run unit/integration tests
   - ./vendor/bin/phpunit lib
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
