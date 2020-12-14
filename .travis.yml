@@ -1,3 +1,53 @@
 language: php
 php:
-  - '7.2'
+  - 7.0
+  - 7.1
+  - 7.2
+
+env:
+  global:
+  - SERVER_BRANCH=master
+  matrix:
+  - DB=sqlite
+
+branches:
+  only:
+  - master
+
+cache:
+  directories:
+  - "$HOME/.composer/cache/files"
+
+before_install:
+  # Check out the Nextcloud server via git
+  - cd ..
+  - git clone https://github.com/nextcloud/server.git --recursive --depth 1 -b $SERVER_BRANCH
+
+  # Move the app under test into Nextcloud's `apps` directory
+  - mv files_external_onedrive server/apps/
+
+install:
+  # Install the server
+  - php -f server/occ maintenance:install --database-name nc_autotest --database-user nc_autotest --admin-user admin --admin-pass admin --database $DB --database-pass=''
+
+  # Enable debug mode to get more info in case a test fails
+  - php -f server/occ config:system:set debug --value=true --type boolean
+
+  # Install composer dependencies
+  - pushd server/apps/files_external_onedrive
+  - composer install
+  - popd
+
+  # Set up app
+  - php -f server/occ app:enable files_external_onedrive
+
+before_script:
+  # Switch bach to the app directory
+  - cd server/apps/files_external_onedrive
+
+script:
+  # Lint php files
+  - find . -name \*.php -not -path './vendor/*' -exec php -l "{}" \;
+
+  # Run unit/integration tests
+  - ./vendor/bin/phpunit lib
