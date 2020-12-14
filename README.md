@@ -52,5 +52,8 @@ References:
 * a logic to refresh token as background jobs [executed by cron refresh the token that will expire within the next 15 minutes]
 * upload large files (over graph limit of 4MB per request) [using uploadSession]
 
-## ToDo
-* add unit tests
+## Donation
+if you found this useful make a donation
+
+[![paypal](https://www.paypalobjects.com/en_US/IT/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VUYAAKGJZB9U6)
+
