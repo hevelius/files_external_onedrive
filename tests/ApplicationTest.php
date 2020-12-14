@@ -22,19 +22,21 @@
  *
  */
 
-namespace OCA\Files_external_onedrive\Tests\Storage;
+namespace OCA\Files_external_onedrive\Tests;
 
 use PHPUnit\Framework\TestCase;
 
-class OneDriveTest extends TestCase
+class ApplicationTest extends TestCase
 {
-    private $config;
-    private $storage;
+    private $app;
 
     protected function setUp():void
     {
         parent::setUp();
-        $this->config = json_decode(file_get_contents('../config.json'), true);
-        //$this->storage = new \OCA\Files_external_onedrive\Storage\OneDrive($this->config);
+        $this->app = new \OCA\Files_external_onedrive\AppInfo\Application();
+    }
+
+    public function testGetBackends() {
+        $this->assertCount(1, $this->app->getBackends());
     }
 }
