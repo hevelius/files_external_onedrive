@@ -20,6 +20,9 @@ $(document).ready(function () {
 			onCompletion.then(function () {
 				var configured = $tr.find('[data-parameter="configured"]');
 				if ($(configured).val() == 'true') {
+					if (localStorage.getItem('files_external_onedrive_oauth2')) {
+						localStorage.removeItem('files_external_onedrive_oauth2');
+					}
 					displayGranted($tr);
 				} else {
 					var client_id = $tr.find('.configuration [data-parameter="client_id"]').val().trim();
@@ -41,8 +44,6 @@ $(document).ready(function () {
 						&& typeof client_secret === "string"
 						&& client_secret !== ''
 					) {
-						console.log("step 2");
-						console.log(location.protocol + '//' + location.host + location.pathname);
 						$('.configuration').trigger('onedrive_oauth_step2', [{
 							backend_id: $tr.attr('class'),
 							client_id: client_id,
@@ -87,7 +88,6 @@ $(document).ready(function () {
 			console.log("trigger is not for this OAuth2");
 			return false;		// means the trigger is not for this OAuth2 grant
 		}
-		console.log(data);
 		OCA.Files_External.Settings.OAuth2.onedriveVerifyCode(backendUrl, data)
 			.fail(function (message) {
 				console.log("Fail with message: "+message);
@@ -196,14 +196,12 @@ OCA.Files_External.Settings.OAuth2.onedriveVerifyCode = function (backendUrl, da
 					deferredObject.resolve(status);
 				});
 			} else {
-			console.log("Verify Code:"+result);
 				deferredObject.reject(result.data);
 			}
 		}
 	)
 	.fail(function(xhr, status, error) {
-		console.log(error);
-		console.log(status);
+		console.log("Error during oauth2 check code");
 	});
 	return deferredObject.promise();
 };
