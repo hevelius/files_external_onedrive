@@ -4,6 +4,8 @@ php:
   - 7.1
   - 7.2
 
+dist: precise
+
 env:
   global:
   - SERVER_BRANCH=master
@@ -11,7 +13,7 @@ env:
   - DB=mysql
 
 addons:
-  mariadb: '10.0'
+  mariadb: '10.4'
 
 services:
   - mysql
