@@ -29,6 +29,12 @@ before_install:
   # Move the app under test into Nextcloud's `apps` directory
   - mv files_external_onedrive server/apps/
 
+  # Initialize DB
+  - sudo mysql -u root -e "CREATE DATABASE nc_autotest;"
+  - sudo mysql -u root -e "CREATE USER 'nc_autotest'@'localhost' IDENTIFIED BY 'nc_autotest';"
+  - sudo mysql -u root -e "GRANT ALL ON nc_autotest.* TO 'nc_autotest'@'localhost';"
+
+
 install:
   # Install the server
   - php -f server/occ maintenance:install --database-name nc_autotest --database-user nc_autotest --admin-user admin --admin-pass admin --database $DB --database-pass=''
@@ -47,9 +53,6 @@ install:
 before_script:
   # Switch back to the app directory
   - cd server/apps/files_external_onedrive
-  - sudo mysql -u root -e "CREATE DATABASE nc_autotest;"
-  - sudo mysql -u root -e "CREATE USER 'nc_autotest'@'localhost' IDENTIFIED BY 'nc_autotest';"
-  - sudo mysql -u root -e "GRANT ALL ON nc_autotest.* TO 'nc_autotest'@'localhost';"
 
 script:
   # Lint php files
