@@ -13,6 +13,7 @@ env:
 
 services:
   - mysql
+  - postgresql
 
 branches:
   only:
@@ -61,4 +62,5 @@ matrix:
       env: DB=mysql;CODECHECK=2
   allow_failures:
     - env: DB=mysql;CODECHECK=2
+    - env: DB=mysql;CODECHECK=1
   fast_finish: true
