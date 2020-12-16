@@ -1,21 +1,32 @@
-# files_external_onedrive
+# Files External Onedrive
+### external storage support for NextCloud
+
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 [![Build Status](https://travis-ci.org/hevelius/files_external_onedrive.svg?branch=master)](https://travis-ci.org/hevelius/files_external_onedrive)
 [![codecov](https://codecov.io/gh/hevelius/files_external_onedrive/branch/master/graph/badge.svg?token=AnnDxRQkSj)](https://codecov.io/gh/hevelius/files_external_onedrive)
 
-OneDrive backend for Nextcloud
-
-Requires Nextcloud 15.0..20.0 (Not tested on other versions )
+Requirements:
+* php with zlib support
+* files_external app must be enabled :exclamation:
 
 ## Steps For Installation:
 - Get the code
 ```bash
-git clone https://github.com/hevelius/files_external_onedrive
-cd files_external_onedrive
-composer install
+$ cd /server_path/apps
+$ git clone https://github.com/hevelius/files_external_onedrive
+$ cd files_external_onedrive
+$ composer install
 ```
-- Move this folder ```files_external_onedrive``` to ```nextcloud/apps```
-- Activate the app from settings page
+- Activate the files_external app from NC settings page or cli
+```bash
+$ cd /server_path/
+$ php -f occ app:enable files_external
+```
+- Activate files_external_onedrive from NC settings page or cli
+```bash
+$ cd /server_path/
+$ php -f occ app:enable files_external_onedrive
+```
 - Fill up the storage details (See Below _Configuring OAuth2_)
 - Fire up the files page to see the ```OneDrive``` mounted as external storage
 
@@ -50,11 +61,6 @@ Make sure to copy the created key (you will not be able to do that later on). Ke
 References:
 * https://github.com/NastuzziSamy/files_external_gdrive
 * https://github.com/icewind1991/files_external_dropbox
-
-## Latest features added
-* added a Cachable Flysystem Adapter
-* a logic to refresh token as background jobs [executed by cron refresh the token that will expire within the next 15 minutes]
-* upload large files (over graph limit of 4MB per request) [using uploadSession]
 
 ## Donation
 if you found this useful make a donation
