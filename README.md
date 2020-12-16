@@ -4,6 +4,7 @@
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 [![Build Status](https://travis-ci.org/hevelius/files_external_onedrive.svg?branch=master)](https://travis-ci.org/hevelius/files_external_onedrive)
 [![codecov](https://codecov.io/gh/hevelius/files_external_onedrive/branch/master/graph/badge.svg?token=AnnDxRQkSj)](https://codecov.io/gh/hevelius/files_external_onedrive)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VUYAAKGJZB9U6)
 
 Requirements:
 * php with zlib support
@@ -61,9 +62,4 @@ Make sure to copy the created key (you will not be able to do that later on). Ke
 References:
 * https://github.com/NastuzziSamy/files_external_gdrive
 * https://github.com/icewind1991/files_external_dropbox
-
-## Donation
-if you found this useful make a donation
-
-[![paypal](https://www.paypalobjects.com/en_US/IT/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VUYAAKGJZB9U6)
 
