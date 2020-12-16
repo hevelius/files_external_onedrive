@@ -42,7 +42,7 @@ before_install:
 
 install:
   # Install the server
-  - php -f server/occ maintenance:install --database-name nc_autotest --database-user nc_autotest --admin-user admin --admin-pass admin --database $DB --database-pass=''
+  - php -f server/occ maintenance:install --database-name nc_autotest --database-user nc_autotest --admin-user admin --admin-pass admin --database $DB --database-pass='nc_autotest'
 
   # Enable debug mode to get more info in case a test fails
   - php -f server/occ config:system:set debug --value=true --type boolean
