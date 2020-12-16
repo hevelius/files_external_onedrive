@@ -7,7 +7,7 @@
 
 Requirements:
 * php with zlib support
-* files_external app must be enabled
+* files_external app must be enabled :exclamation:
 
 ## Steps For Installation:
 - Get the code
