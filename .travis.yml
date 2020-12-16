@@ -28,6 +28,7 @@ before_install:
   - ./occ check
   - ./occ status
   - ./occ app:list
+  - ./occ app:enable files_external
   - ./occ app:enable $APP_NAME
   - ./occ app:list
 
