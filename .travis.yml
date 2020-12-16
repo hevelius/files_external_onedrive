@@ -1,70 +1,65 @@
 language: php
 php:
-  - 7.0
-  - 7.1
-  - 7.2
-
-dist: precise
+  - 7.3
+  - 7.4
 
 env:
   global:
-  - SERVER_BRANCH=master
+    - SERVER_BRANCH=master
+    - APP_NAME=files_external_onedrive
   matrix:
-  - DB=mysql
-
-addons:
-  mariadb: '10.4'
+    - DB=sqlite
 
 services:
   - mysql
 
 branches:
   only:
-  - master
-
-cache:
-  directories:
-  - "$HOME/.composer/cache/files"
+    - master
+    - /^stable\d+(\.\d+)?$/
+    - /^prep-release-\d+(\.\d+)?$/
 
 before_install:
-  # Check out the Nextcloud server via git
-  - cd ..
-  - git clone https://github.com/nextcloud/server.git --recursive --depth 1 -b $SERVER_BRANCH
+  - wget https://raw.githubusercontent.com/nextcloud/travis_ci/master/before_install.sh
+  - . ./before_install.sh $APP_NAME $CORE_BRANCH $DB
 
-  # Move the app under test into Nextcloud's `apps` directory
-  - mv files_external_onedrive server/apps/
-
-  # Initialize DB
-  - sudo mysql -u root -e "CREATE DATABASE nc_autotest;"
-  - sudo mysql -u root -e "CREATE USER 'nc_autotest'@'localhost' IDENTIFIED BY 'nc_autotest';"
-  - sudo mysql -u root -e "GRANT ALL ON nc_autotest.* TO 'nc_autotest'@'localhost';"
-
-
-install:
-  # Install the server
-  - php -f server/occ maintenance:install --database-name nc_autotest --database-user nc_autotest --admin-user admin --admin-pass admin --database $DB --database-pass='nc_autotest'
-
-  # Enable debug mode to get more info in case a test fails
-  - php -f server/occ config:system:set debug --value=true --type boolean
-
-  # Install composer dependencies
-  - pushd server/apps/files_external_onedrive
-  - composer install
-  - popd
-
-  # Set up app
-  - php -f server/occ app:enable files_external_onedrive
-
-before_script:
-  # Switch back to the app directory
-  - cd server/apps/files_external_onedrive
+  # Add some output debugging information
+  - cd ../server
+  - ./occ check
+  - ./occ status
+  - ./occ app:list
+  - ./occ app:enable $APP_NAME
+  - ./occ app:list
 
 script:
-  # Lint php files
-  - find . -name \*.php -not -path './vendor/*' -exec php -l "{}" \;
+  - cd apps/$APP_NAME/
 
-  # Run unit/integration tests
-  - ./vendor/bin/phpunit lib
+  # Test the app
+  - sh -c "if [ '$JSTESTS' != '1' -a '$CODECHECK' = '1' ]; then find . -name \*.php -exec php -l \"{}\" \;; fi"
+  - cd ../../
+  - sh -c "if [ '$JSTESTS' != '1' -a '$CODECHECK' = '1' ]; then ./occ app:check-code $APP_NAME -c private -c strong-comparison; fi"
+  - sh -c "if [ '$JSTESTS' != '1' -a '$CODECHECK' = '2' ]; then ./occ app:check-code $APP_NAME -c deprecation; fi"
+  - cd apps/$APP_NAME/
 
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  # Run phpunit tests
+  - cd tests/
+  - sh -c "if [ '$JSTESTS' != '1' -a '$CODECHECK' != '1' -a '$CODECHECK' != '2' ]; then phpunit --configuration phpunit.xml; fi"
+
+  # Create coverage report
+  - sh -c "if [ '$JSTESTS' != '1' -a '$CODECHECK' != '1' -a '$CODECHECK' != '2' ]; then wget https://scrutinizer-ci.com/ocular.phar; fi"
+  - sh -c "if [ '$JSTESTS' != '1' -a '$CODECHECK' != '1' -a '$CODECHECK' != '2' ]; then php ocular.phar code-coverage:upload --format=php-clover clover.xml; fi"
+  - cd ../
+
+matrix:
+  include:
+    - php: 7.3
+      env: DB=mysql
+    - php: 7.3
+      env: DB=pgsql
+    - php: 7.3
+      env: DB=mysql;CODECHECK=1
+    - php: 7.3
+      env: DB=mysql;CODECHECK=2
+  allow_failures:
+    - env: DB=mysql;CODECHECK=2
+  fast_finish: true
