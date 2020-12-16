@@ -5,7 +5,7 @@ php:
 
 env:
   global:
-    - SERVER_BRANCH=master
+    - CORE_BRANCH=master
     - APP_NAME=files_external_onedrive
   matrix:
     - DB=sqlite
