@@ -37,7 +37,8 @@ class OneDrive extends Backend
      */
     public function __construct(IL10N $l)
     {
-        $appWebPath = \OC_App::getAppWebPath('files_external_onedrive');
+	$app = \OC::$server->query(Application::class);
+        $appWebPath = $app::getAppWebPath('files_external_onedrive');
 
         $this
             ->setIdentifier('files_external_onedrive')

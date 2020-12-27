@@ -27,8 +27,10 @@ if ((@include_once(dirname(__DIR__).'/vendor/autoload.php')) === false) {
     throw new \Exception('Cannot include autoload. Did you install dependencies using composer?');
 }
 
-if (!\OC_App::isEnabled('files_external')) {
-	OC_App::enable('files_external');
+$app = \OC::$server->query(Application::class);
+
+if (!$app::isEnabled('files_external')) {
+	$app::enable('files_external');
 }
 
 $app = new \OCA\Files_external_onedrive\AppInfo\Application();
