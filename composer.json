@@ -36,6 +36,10 @@
         "ext-curl": "*"
     },
 
+    "replace": {
+        "guzzlehttp/guzzle": "*"
+    },
+
     "require-dev": {
       "phpunit/phpunit": "^8.0"
     },
