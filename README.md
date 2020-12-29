@@ -40,7 +40,9 @@ Connecting OneDrive is a little more work because you have to create a onedrive 
 - Name Your App
 - Make sure to select:  
 `Accounts in any organizational directory (Any Azure AD directory - Multitenant) and personal Microsoft accounts (e.g. Skype, Xbox)`
-  ![img.png](img.png)
+
+![](./images/img.png)
+
 - For **Redirect URL (optional)** add the following URL ```http://path/to/nextcloud/index.php/settings/user/externalstorages``` _(Replace http://path/to/nextcloud/index.php with you valid Nextcloud installation path, ensure that you don't leave `index.php` in the path.  Example: `https://nextcloud.myserver.com/settings/admin/externalstorages`)_
 - Click **Register** to create your app.
 
