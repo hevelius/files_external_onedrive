@@ -57,7 +57,7 @@ Make sure to copy the created key (you will not be able to do that later on). Ke
 - add auth for [ User.Read | Files.ReadWrite.All | offline_access ] (the last is necessary to perform a correct token refresh)
 
 ##### On Nextcloud
-- Copy Client Id and client secret then Go to Nextcloud ```/settings/user/externalstorages``` and Add a new storage **OneDrive**
+- Copy Application client ID (from the app overview section) and client secret then Go to Nextcloud ```/settings/user/externalstorages``` and Add a new storage **OneDrive**
 - Fill the details Client Id, Client Secrets from you onedrive App page
 - Click Grant Access and then you will be redirected for OAuth login
 - After completing the OAuth you will be redirect back to Storage Section and you should see **green** mark along your storage configuration
