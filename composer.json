@@ -32,7 +32,7 @@
         "league/flysystem-cached-adapter": "*",
 	    "hevelius/flysystem-onedrive": "*",
         "league/oauth2-client": "*",
-        "php":      ">= 5.4 || >= 7.0",
+        "php":      "^5.4|^7.0|^8.0",
         "ext-curl": "*"
     },
 
